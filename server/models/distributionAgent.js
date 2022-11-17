@@ -8,9 +8,22 @@ module.exports = (db = require('../config/connectDB')) => {
         autoIncrement: true, 
         primaryKey: true
       },
+      agentName : {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'VIETTEL'
+      }
+      ,
       agentAdress: {
         type: DataTypes.STRING,
         allowNull: false
+      },
+      agentCity: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      agentPhone: {
+        type: DataTypes.STRING
       }
     }, {
         timestamps: false

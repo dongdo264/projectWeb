@@ -15,6 +15,10 @@ module.exports = (db = require('../config/connectDB')) => {
       factoryCity: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      factoryPhone: {
+        type: DataTypes.STRING,
+        allowNull: false
       }
     }, {
         timestamps: false
