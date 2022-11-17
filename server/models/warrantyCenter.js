@@ -11,6 +11,18 @@ module.exports = (db = require('../config/connectDB')) => {
       wcAdress: {
         type: DataTypes.STRING,
         allowNull: false
+      },
+      wcCity: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      wcPhone: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      workingTime: {
+        type: DataTypes.STRING,
+        defaultValue: '8h00 - 17h00 từ thứ Hai đến thứ Bảy'
       }
     }, {
         timestamps: false

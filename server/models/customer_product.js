@@ -1,32 +1,28 @@
 module.exports = (db = require('../config/connectDB')) => {
-    const {DataTypes, DATE, NOW} = require('sequelize');
-    const Order = db.define('orders', {
+    const {DataTypes, NOW } = require('sequelize');
+    const CustomerProduct = db.define('customer_products', {
+      
       // Model attributes are defined here
-      orderCode: {
+      userCode: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        autoIncrement: true,
-        primaryKey: true
+        primaryKey: true,
       },
-      userCode: {
+      productCode: {
         type: DataTypes.INTEGER,
         allowNull: false
       },
-      orderDate: {
+      dateOfPurchase: {
         type: DataTypes.DATEONLY,
         allowNull: false,
         defaultValue: NOW
       },
-      comments: {
-        type: DataTypes.STRING(4000),
-        allowNull: true
-      }, 
-      orderStatus: {
+      productStatus: {
         type: DataTypes.STRING,
-        defaultValue: 'Đang xử lý'
+        allowNull: false
       }
     }, {
         timestamps: false
     });
-    return Order;
+    return CustomerProduct;
   }
