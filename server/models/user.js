@@ -6,22 +6,24 @@ module.exports = (db = require('../config/connectDB')) => {
     userCode: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      autoIncrement: true,
       primaryKey: true,
     },
     userName: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     userDob: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      allowNull: true
     },
     userAdress: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     userPhone: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     userEmail: {
       type: DataTypes.STRING,

@@ -5,7 +5,6 @@ module.exports = (db = require('../config/connectDB')) => {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      autoIncrement: true,
       primaryKey: true
     },
     username: {

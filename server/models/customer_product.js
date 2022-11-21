@@ -3,14 +3,21 @@ module.exports = (db = require('../config/connectDB')) => {
     const CustomerProduct = db.define('customer_products', {
       
       // Model attributes are defined here
+      model: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true
+      },
       userCode: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        primaryKey: true,
+        primaryKey: true
       },
       productCode: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        primaryKey: true
       },
       dateOfPurchase: {
         type: DataTypes.DATEONLY,
