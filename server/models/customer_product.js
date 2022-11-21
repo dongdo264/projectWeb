@@ -14,6 +14,10 @@ module.exports = (db = require('../config/connectDB')) => {
         allowNull: false,
         primaryKey: true
       },
+      agentCode: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
       productCode: {
         type: DataTypes.INTEGER,
         allowNull: false,
