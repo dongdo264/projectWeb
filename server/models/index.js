@@ -1,39 +1,54 @@
 let db = require('../config/connectDB');
 const Account = require('./account');
-const User = require('./user');
+const Customer = require('./customers');
 const AgentWarehouse = require('./agentWarehouse');
 const DistributionAgent = require('./distributionAgent');
 const Factory = require('./factory');
 const Product = require('./product');
 const ProductLine = require('./productline');
 const WarrantyCenter = require('./warrantyCenter');
-const Order = require('./order');
-const OrderDetail = require('./orderdetail');
 const CustomerProduct = require('./customer_product');
 const Production = require('./production');
 const Productdetail = require('./productdetails');
+const Warranty = require('./warranty');
 
 const account = Account(db);
-const user = User(db);
+const customer = Customer(db);
 const agentWarehouse = AgentWarehouse(db);
 const distributionAgent = DistributionAgent(db);
 const factories = Factory(db);
 const product = Product(db);
 const productLine = ProductLine(db);
 const warrantyCenter = WarrantyCenter(db);
-const order = Order(db);
-const orderdetail = OrderDetail(db);
 const customer_product = CustomerProduct(db);
 const production = Production(db);
 const productdetails = Productdetail(db);
+const warranty = Warranty(db);
 
-user.hasOne(account, {
-    foreignKey: "id"
+account.hasOne(distributionAgent, {
+    foreignKey: "agentCode"
 });
-account.belongsTo(user, {
-    foreignKey: "id",
-    targetKey: "userCode",
+distributionAgent.belongsTo(account, {
+    foreignKey: "agentCode",
+    targetKey: "id",
 });
+
+account.hasOne(factories, {
+    foreignKey: 'factoryCode'
+})
+factories.belongsTo(account, {
+    foreignKey: "factoryCode",
+    targetKey: "id"
+})
+
+account.hasOne(warrantyCenter, {
+    foreignKey: "wcCode"
+})
+warrantyCenter.belongsTo(account, {
+    foreignKey: "wcCode",
+    targetKey: "id"
+})
+
 
 productLine.hasMany(product, {
     foreignKey: 'productLine'
@@ -42,7 +57,6 @@ product.belongsTo(productLine, {
     foreignKey: 'productLine',
     targetKey: 'productLine'
 });
-
 
 distributionAgent.hasMany(agentWarehouse, {
     foreignKey: 'agentCode'
@@ -53,8 +67,7 @@ agentWarehouse.belongsTo(distributionAgent, {
 })
 
 distributionAgent.hasMany(product, {
-    foreignKey: 'productCode',
-    otherKey: 'agentCode'
+    foreignKey: 'productCode'
 })
 product.belongsToMany(distributionAgent, {
     foreignKey: 'productCode',
@@ -62,44 +75,17 @@ product.belongsToMany(distributionAgent, {
     otherKey: 'agentCode'
 })
 
- 
 
-user.hasMany(product, {
+customer.hasMany(product, {
     foreignKey: 'productCode',
-    otherKey: 'userCode'
+    otherKey: 'customerCode'
 })
 
-product.belongsToMany(user, {
-    foreignKey: 'productCode',
+product.belongsToMany(customer, {
+    foreignKey: 'productCode', 
     through: customer_product,
-    otherKey: 'userCode'
+    otherKey: 'customerCode'
 })
-
-user.hasMany(order, {
-    foreignKey: 'userCode'
-})
-order.belongsTo(user, {
-    foreignKey: 'userCode',
-    targetKey: 'userCode'
-})
-
-order.hasMany(product, {
-    foreignKey: 'productCode',
-    otherKey: 'orderCode'
-})
-product.belongsToMany(order, {
-    foreignKey: 'productCode',
-    through: orderdetail,
-    otherKey: 'orderCode'
-})
-
-order.hasMany(orderdetail, {
-    foreignKey: 'orderCode'  
-})
-orderdetail.belongsTo(order, {
-    foreignKey: 'orderCode',
-    targetKey: 'orderCode'
-}) 
 
 factories.hasMany(product, {
     foreignKey: 'productCode',
@@ -127,20 +113,28 @@ productdetails.belongsTo(product, {
     targetKey: 'productCode'
 })
 
+warrantyCenter.hasMany(warranty, {
+    foreignKey: 'wcCode'
+})
+warranty.belongsTo(warrantyCenter, {
+    foreignKey: 'wcCode',
+    targetKey: 'wcCode'
+})
+
+
 db.sync({alter: true});
 
 module.exports = {
     Account: account, 
-    User: user,
+    Customer: customer,
     AgentWarehouse: agentWarehouse,
     DistributionAgent: distributionAgent,
     Factory: factories,
     Product: product,
     ProductLine: productLine,
     WarrantyCenter: warrantyCenter,
-    Order: order,
-    OrderDetail: orderdetail,
     CustomerProduct: customer_product,
     Production: production,
-    Productdetail: productdetails
+    Productdetail: productdetails,
+    Warranty: warranty
 }

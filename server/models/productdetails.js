@@ -7,27 +7,50 @@ module.exports = (db = require('../config/connectDB')) => {
         allowNull: false,
         primaryKey: true
       },
-      productRam: {
+      size: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: '4GB'
+        defaultValue: '99KG'
       },
-      productDetail1: {
+      frame: {
         type: DataTypes.STRING,
         allowNull: false
       },
-      productDetail2: {
+      shock: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        defaultValue: 'N/A'
       },
-      productDetail3: {
+      rims: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
       },
-      productDetail4: {
+      tires: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
+      },
+      handlebar: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      saddle: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      pedals: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      brakes: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+      weight: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'Trọng lượng có thể thay đổi dựa trên kích cỡ, chất liệu hoàn thiện, chi tiết kim loại và các phụ kiện.'
       }
+
     }, {
         timestamps: false
     });

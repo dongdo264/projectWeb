@@ -9,7 +9,7 @@ module.exports = (db = require('../config/connectDB')) => {
         autoIncrement: true,
         primaryKey: true
       },
-      userCode: {
+      customerCode: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true
