@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th10 21, 2022 lúc 04:37 PM
+-- Thời gian đã tạo: Th10 21, 2022 lúc 04:43 PM
 -- Phiên bản máy phục vụ: 10.4.22-MariaDB
 -- Phiên bản PHP: 8.1.2
 
@@ -80,6 +80,7 @@ CREATE TABLE `customers` (
 CREATE TABLE `customer_products` (
   `model` int(11) NOT NULL,
   `customerCode` int(11) NOT NULL,
+  `agentCode` int(11) NOT NULL,
   `productCode` int(11) NOT NULL,
   `dateOfPurchase` date NOT NULL,
   `productStatus` varchar(255) NOT NULL
