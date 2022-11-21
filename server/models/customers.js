@@ -1,40 +1,40 @@
 module.exports = (db = require('../config/connectDB')) => {
   const {DataTypes } = require('sequelize');
-  const User = db.define('users', {
+  const Customer = db.define('customers', {
     
     // Model attributes are defined here
-    userCode: {
+    customerCode: {
       type: DataTypes.INTEGER,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
     },
-    userName: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    userDob: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    userAdress: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    userPhone: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    userEmail: {
+    customerName: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    userStatus: {
+    customerDob: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    customerAdress: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    customerPhone: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    customerEmail: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    customerStatus: {
       type: DataTypes.STRING,
       allowNull: true
     }
   }, {
       timestamps: false
   });
-  return User;
+  return Customer;
 }

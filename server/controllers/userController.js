@@ -1,8 +1,7 @@
 const db = require('../models/index');
-const bcryptjs  = require('bcryptjs');
+const bcrypt  = require('bcryptjs');
 class userController {
     async createUser(req, res) {
-        //console.log(req.body.userName);
         try {
             let userName= req.body.userName;
             let userDob= req.body.userDob;
@@ -26,7 +25,7 @@ class userController {
                 userStatus
             }
             console.log(data);
-            await db.User.create({
+            await db.Customer.create({
                 userCode: Date.now() % 100000000,
                 userName,
                 userDob,
@@ -78,7 +77,7 @@ class userController {
 
     async getAllUser(req, res) {
         try {
-            let data = await db.User.findAll({
+            let data = await db.Customer.findAll({
                 raw: true
             });
             if (data) {
@@ -100,7 +99,7 @@ class userController {
     async getUserById(req, res) {
         try {
             const id = req.query.id;
-            let data = await db.User.findOne({
+            let data = await db.Customer.findOne({
                 where: {
                     userCode: id
                 },

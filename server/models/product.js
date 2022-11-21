@@ -25,7 +25,7 @@ module.exports = (db = require('../config/connectDB')) => {
       },
       warrantyPeriod: {
         type: DataTypes.STRING,
-        defaultValue: '12 tháng'
+        defaultValue: '60 tháng'
       }
     }, {
         timestamps: false
