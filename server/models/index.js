@@ -10,6 +10,8 @@ const WarrantyCenter = require('./warrantyCenter');
 const Order = require('./order');
 const OrderDetail = require('./orderdetail');
 const CustomerProduct = require('./customer_product');
+const Production = require('./production');
+const Productdetail = require('./productdetails');
 
 const account = Account(db);
 const user = User(db);
@@ -22,6 +24,8 @@ const warrantyCenter = WarrantyCenter(db);
 const order = Order(db);
 const orderdetail = OrderDetail(db);
 const customer_product = CustomerProduct(db);
+const production = Production(db);
+const productdetails = Productdetail(db);
 
 user.hasOne(account, {
     foreignKey: "id"
@@ -39,13 +43,6 @@ product.belongsTo(productLine, {
     targetKey: 'productLine'
 });
 
-factories.hasMany(product, {
-    foreignKey: 'factoryCode'
-});
-product.belongsTo(factories, {
-    foreignKey: 'factoryCode',
-    targetKey: 'factoryCode'
-});
 
 distributionAgent.hasMany(agentWarehouse, {
     foreignKey: 'agentCode'
@@ -104,6 +101,32 @@ orderdetail.belongsTo(order, {
     targetKey: 'orderCode'
 }) 
 
+factories.hasMany(product, {
+    foreignKey: 'productCode',
+    otherKey: 'factoryCode'
+})
+product.belongsToMany(factories, {
+    foreignKey: 'productCode',
+    through: production,
+    otherKey: 'factoryCode'
+})
+
+factories.hasMany(production, {
+    foreignKey: 'factoryCode'
+})
+production.belongsTo(factories, {
+    foreignKey: 'factoryCode',
+    targetKey: 'factoryCode'
+})
+
+product.hasOne(productdetails, {
+    foreignKey: 'productCode'
+})
+productdetails.belongsTo(product, {
+    foreignKey: 'productCode',
+    targetKey: 'productCode'
+})
+
 db.sync({alter: true});
 
 module.exports = {
@@ -117,5 +140,7 @@ module.exports = {
     WarrantyCenter: warrantyCenter,
     Order: order,
     OrderDetail: orderdetail,
-    CustomerProduct: customer_product
+    CustomerProduct: customer_product,
+    Production: production,
+    Productdetail: productdetails
 }

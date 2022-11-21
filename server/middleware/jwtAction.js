@@ -1,13 +1,31 @@
+const db = require('../models/index');
 const jwt = require('jsonwebtoken');
 
-let createToken = async (req, res, next) => {
 
-}
 let verifyToken = async (req, res, next) => {
-    
+    const token = res.headers["x-access-token"];
+    if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+            if (err) {
+                res.json({
+                    errCode: 0,
+                    msg: "Xác thực không thành công!",
+                    auth: false
+                })
+            } else {
+                req.userID = decoded.id;
+                next();
+            }
+        });
+    } else {
+        res.json({
+            errCode: 0,
+            msg: "Xác thực không thành công!",
+            auth: false
+        })
+    }
 }
 
 module.exports = {
-    createToken,
     verifyToken
 }

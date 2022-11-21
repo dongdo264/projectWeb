@@ -11,29 +11,17 @@ module.exports = (db = require('../config/connectDB')) => {
         type: DataTypes.STRING,
         allowNull: false
       },
-      productDescription: {
-        type: DataTypes.STRING(4000),
+      productName: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
-      productQuantity: {
+      buyPrice: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        defaultValue: 0
-      },
-      productPrice: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      factoryCode: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      wcCode: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
       },
       productStatus: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        defaultValue: 'SELLING'
       },
       warrantyPeriod: {
         type: DataTypes.STRING,

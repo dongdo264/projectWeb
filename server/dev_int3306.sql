@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th10 17, 2022 lúc 10:50 AM
+-- Thời gian đã tạo: Th10 21, 2022 lúc 08:12 AM
 -- Phiên bản máy phục vụ: 10.4.22-MariaDB
 -- Phiên bản PHP: 8.1.2
 
@@ -39,7 +39,7 @@ CREATE TABLE `accounts` (
 --
 
 INSERT INTO `accounts` (`id`, `username`, `password`, `role`) VALUES
-(1, 'dongdo', '1234', 1),
+(1, 'admin', '123', 10),
 (2, 'nguyen', 'nguyen', 0);
 
 -- --------------------------------------------------------
@@ -62,6 +62,7 @@ CREATE TABLE `agentwarehouses` (
 
 CREATE TABLE `customer_products` (
   `userCode` int(11) NOT NULL,
+  `model` int(11) NOT NULL,
   `productCode` int(11) NOT NULL,
   `dateOfPurchase` date NOT NULL,
   `productStatus` varchar(255) NOT NULL
@@ -141,6 +142,48 @@ CREATE TABLE `orders` (
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `productdetails`
+--
+
+CREATE TABLE `productdetails` (
+  `productCode` int(11) NOT NULL,
+  `productRam` varchar(255) NOT NULL DEFAULT '4GB',
+  `productDetail1` varchar(255) NOT NULL,
+  `productDetail2` varchar(255) NOT NULL,
+  `productDetail3` varchar(255) NOT NULL,
+  `productDetail4` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Đang đổ dữ liệu cho bảng `productdetails`
+--
+
+INSERT INTO `productdetails` (`productCode`, `productRam`, `productDetail1`, `productDetail2`, `productDetail3`, `productDetail4`) VALUES
+(1, '8GB', 'Màu sắc rực rỡ, hiển thị chân thực - Màn hình 6.5 inches, super AMOLED', 'Trọng lượng nhẹ, kháng bụi, kháng nước tốt - Nhẹ chỉ 190g, kháng nước, kháng bụi IP67', 'Ảnh chụp có chi tiết cao, nhiều tính năng mới mẻ - Cụm 4 camera 64MP, đa dạng chế độ chụp', 'Trải nhiệm mượt mà trên mọi tác vụ - Exynos 1280 8 nhân, RAM 8GB'),
+(2, '8GB', 'Camera chất lượng, bắt trọn từng khoảnh khắc - Cụm 4 camera với cảm biến chính lên đến 108MP', 'Thưởng thức không gian giải trí cực đỉnh - Màn hình lớn 6.7 inches, độ phân giải full HD+, 120HZ mượt mà', 'Cấu hình mạnh mẽ với chip Snapdragon 778G, RAM lên đến 8GB', 'Chiến game thoải mái không lo gián đoạn - Dụng lượng pin 5000mAh, hỗ trợ sạc nhanh 25 W'),
+(3, '4GB', 'Thỏa sức tận hưởng thế giới giải trí sống động - Màn hình TFT LCD, 6.6 inches', 'Hiệu năng ổn định, ấn tượng - Chip Exynos 850 mạnh mẽ, xử lý tốt mọi tác vụ', 'Camera nâng cấp với nhiều tính năng độc đáo - Cụm 4 camera 50MP, 5MP, 2MP, 2MP', 'Thoải mái trải nhiệm với viên pim 5000mAh, sạc nhanh 15 Ư'),
+(4, '8GB', 'Vi xử lý mạnh mẽ nhất Galaxy - Snapdragon 8 gen 1 (4nm)', 'Camera mắt thần bóng đêm Nightography - Chụp đêm cực đỉnh', 'S Pen đầu tiên trên Galaxy S - Độ trễ thấp, dễ thao tác', 'Dung lượng pin bất chấp ngày đêm - Viên pin 5000mAh, sạc nhanh 45 W'),
+(5, '8GB', 'Vi xử lý mạnh mẽ nhất Galaxy - Snapdragon 8 gen 1 (4nm)', 'Camera mắt thần bóng đêm Nightography - Chụp đêm cực đỉnh, bắt trọn khoảnh khắc', 'Mãn nhãn từng chi tiết - Màn hình 6,6\", Dynamic AMOLED 2X, 120HZ', 'Thỏa sức trải nhiệm chỉ với 1 lần sạc - Viên pin 4500mAh, sạc nhanh 45W, sạc không dây'),
+(6, '12GB', 'Camera mắt thần bóng đêm cho trải nhiệm chụp ảnh ấn tượng - Camera chính 50MP', 'Màn hình ngoài 6.2\" cùng màn hình chính 7.6\" độc đáo', 'Hiệu năng mạnh mẽ đến từ dòng chip cao cấp của Qualcomm - Snapdragon 8 Plus Gen 1', 'Viên pin ấn tượng, sạc nhanh bứt tốc - Pin 4400mAh, sạc nhanh 25 W');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `productions`
+--
+
+CREATE TABLE `productions` (
+  `batchCode` int(11) NOT NULL,
+  `productCode` int(11) NOT NULL,
+  `factoryCode` int(11) NOT NULL,
+  `MFG` date NOT NULL,
+  `quantityInStock` int(11) NOT NULL DEFAULT 0,
+  `color` varchar(255) NOT NULL DEFAULT 'Đen'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `productlines`
 --
 
@@ -154,10 +197,10 @@ CREATE TABLE `productlines` (
 --
 
 INSERT INTO `productlines` (`productLine`, `textDescription`) VALUES
-('Laptop', ''),
-('Smartwatch', 'Đồng hồ thông minh'),
-('Tablet', 'Máy tính bảng'),
-('Điện thoại', '');
+('Galaxy A', ''),
+('Galaxy Note', ''),
+('Galaxy S', ''),
+('Galaxy Z', '');
 
 -- --------------------------------------------------------
 
@@ -168,14 +211,23 @@ INSERT INTO `productlines` (`productLine`, `textDescription`) VALUES
 CREATE TABLE `products` (
   `productCode` int(11) NOT NULL,
   `productLine` varchar(255) NOT NULL,
-  `productDescription` varchar(4000) NOT NULL,
-  `productQuantity` int(11) NOT NULL DEFAULT 0,
-  `productPrice` int(11) NOT NULL,
-  `factoryCode` int(11) NOT NULL,
-  `wcCode` int(11) DEFAULT NULL,
-  `productStatus` varchar(255) DEFAULT NULL,
+  `productName` varchar(255) NOT NULL,
+  `buyPrice` int(11) NOT NULL,
+  `productStatus` varchar(255) DEFAULT 'SELLING',
   `warrantyPeriod` varchar(255) DEFAULT '12 tháng'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Đang đổ dữ liệu cho bảng `products`
+--
+
+INSERT INTO `products` (`productCode`, `productLine`, `productName`, `buyPrice`, `productStatus`, `warrantyPeriod`) VALUES
+(1, 'Galaxy A', 'Samsung Galaxy A53 (5G)', 8990000, 'SELLING', '12 tháng'),
+(2, 'Galaxy A', 'Samsung Galaxy A73 (5G) 256GB', 1190000, 'SELLING', '12 tháng'),
+(3, 'Galaxy A', 'Samsung Galaxy A13 (4G)', 3900000, 'SELLING', '12 tháng'),
+(4, 'Galaxy S', 'Samsung Galaxy S22 Ultra (12GB - 256GB)', 26000000, 'SELLING', '12 tháng'),
+(5, 'Galaxy S', 'Samsung Galaxy S22 Plus (8GB + 128GB)', 19990000, 'SELLING', '12 tháng'),
+(6, 'Galaxy Z', 'Samsung Galaxy Z Fold4', 40000000, 'SELLING', '12 tháng');
 
 -- --------------------------------------------------------
 
@@ -185,10 +237,10 @@ CREATE TABLE `products` (
 
 CREATE TABLE `users` (
   `userCode` int(11) NOT NULL,
-  `userName` varchar(255) NOT NULL,
+  `userName` varchar(255) DEFAULT NULL,
   `userDob` varchar(255) DEFAULT NULL,
-  `userAdress` varchar(255) NOT NULL,
-  `userPhone` varchar(255) NOT NULL,
+  `userAdress` varchar(255) DEFAULT NULL,
+  `userPhone` varchar(255) DEFAULT NULL,
   `userEmail` varchar(255) NOT NULL,
   `userStatus` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -198,8 +250,12 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`userCode`, `userName`, `userDob`, `userAdress`, `userPhone`, `userEmail`, `userStatus`) VALUES
-(1, 'Đỗ Công Đồng', '26/04/2002', 'Ba Vì', '0963712656', 'dongdo264@gmail.com', 'verified'),
-(2, 'Nguyễn', '00/00/0000', 'N/A', '0987777777', 'N/A', 'verified');
+(1, 'Đỗ Công Đồng', '26/04/2002', 'Ba Vì\r\nCamera bóng tối chụp \r\nVi sử lý mạnh mẽ\r\n', '0963712656', 'dongdo264@gmail.com', 'deleted'),
+(2, 'Nguyễn', '00/00/0000', 'N/A', '0987777777', 'N/A', 'verified'),
+(5, 'Nguyễn Văn', '12/12/2005', 'HN', '123456789', 'abc@gmail', 'pending'),
+(48975618, 'Nguyễn Văn', '12/12/2005', 'HN', '123456789', 'abc@gmail', 'pending'),
+(48983331, 'Nguyễn Văn', '12/12/2005', 'HN', '123456789', 'abc@gmail', 'pending'),
+(2147483647, 'Nguyễn Văn', '12/12/2002', 'HN', '123456789', 'abc@gmail', 'pending');
 
 -- --------------------------------------------------------
 
@@ -255,7 +311,7 @@ ALTER TABLE `agentwarehouses`
 -- Chỉ mục cho bảng `customer_products`
 --
 ALTER TABLE `customer_products`
-  ADD PRIMARY KEY (`userCode`),
+  ADD PRIMARY KEY (`model`,`userCode`),
   ADD KEY `productCode` (`productCode`);
 
 --
@@ -285,6 +341,20 @@ ALTER TABLE `orders`
   ADD KEY `userCode` (`userCode`);
 
 --
+-- Chỉ mục cho bảng `productdetails`
+--
+ALTER TABLE `productdetails`
+  ADD PRIMARY KEY (`productCode`);
+
+--
+-- Chỉ mục cho bảng `productions`
+--
+ALTER TABLE `productions`
+  ADD PRIMARY KEY (`batchCode`,`productCode`,`factoryCode`),
+  ADD KEY `fk_productions_factories` (`factoryCode`),
+  ADD KEY `fk_productions_products` (`productCode`);
+
+--
 -- Chỉ mục cho bảng `productlines`
 --
 ALTER TABLE `productlines`
@@ -295,9 +365,7 @@ ALTER TABLE `productlines`
 --
 ALTER TABLE `products`
   ADD PRIMARY KEY (`productCode`),
-  ADD KEY `fk_products_warrantycenters` (`wcCode`),
-  ADD KEY `productLine` (`productLine`),
-  ADD KEY `factoryCode` (`factoryCode`);
+  ADD KEY `productLine` (`productLine`);
 
 --
 -- Chỉ mục cho bảng `users`
@@ -314,12 +382,6 @@ ALTER TABLE `warrantycenters`
 --
 -- AUTO_INCREMENT cho các bảng đã đổ
 --
-
---
--- AUTO_INCREMENT cho bảng `accounts`
---
-ALTER TABLE `accounts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `agentwarehouses`
@@ -350,6 +412,12 @@ ALTER TABLE `orderdetails`
 --
 ALTER TABLE `orders`
   MODIFY `orderCode` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `productions`
+--
+ALTER TABLE `productions`
+  MODIFY `batchCode` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `warrantycenters`
@@ -395,13 +463,23 @@ ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`userCode`) REFERENCES `users` (`userCode`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Các ràng buộc cho bảng `productdetails`
+--
+ALTER TABLE `productdetails`
+  ADD CONSTRAINT `fk_productdetails_products` FOREIGN KEY (`productCode`) REFERENCES `products` (`productCode`) ON UPDATE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `productions`
+--
+ALTER TABLE `productions`
+  ADD CONSTRAINT `fk_productions_factories` FOREIGN KEY (`factoryCode`) REFERENCES `factories` (`factoryCode`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_productions_products` FOREIGN KEY (`productCode`) REFERENCES `products` (`productCode`) ON UPDATE CASCADE;
+
+--
 -- Các ràng buộc cho bảng `products`
 --
 ALTER TABLE `products`
-  ADD CONSTRAINT `fk_products_agentwarehouses` FOREIGN KEY (`productCode`) REFERENCES `agentwarehouses` (`productCode`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_products_warrantycenters` FOREIGN KEY (`wcCode`) REFERENCES `warrantycenters` (`wcCode`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `products_ibfk_61` FOREIGN KEY (`productLine`) REFERENCES `productlines` (`productLine`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `products_ibfk_62` FOREIGN KEY (`factoryCode`) REFERENCES `factories` (`factoryCode`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`productLine`) REFERENCES `productlines` (`productLine`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
