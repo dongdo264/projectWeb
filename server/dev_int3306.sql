@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th10 21, 2022 lúc 04:43 PM
+-- Thời gian đã tạo: Th10 22, 2022 lúc 11:34 AM
 -- Phiên bản máy phục vụ: 10.4.22-MariaDB
 -- Phiên bản PHP: 8.1.2
 
@@ -34,15 +34,6 @@ CREATE TABLE `accounts` (
   `role` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Đang đổ dữ liệu cho bảng `accounts`
---
-
-INSERT INTO `accounts` (`id`, `username`, `password`, `role`) VALUES
-(1, 'dongdo', '123', 10),
-(2, 'dongday', '123', 1),
-(3, 'admin', '123', 100);
-
 -- --------------------------------------------------------
 
 --
@@ -51,7 +42,7 @@ INSERT INTO `accounts` (`id`, `username`, `password`, `role`) VALUES
 
 CREATE TABLE `agentwarehouses` (
   `agentCode` int(11) NOT NULL,
-  `productCode` int(11) NOT NULL,
+  `bathCode` int(11) NOT NULL,
   `quantityInStock` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -100,13 +91,6 @@ CREATE TABLE `distributionagents` (
   `agentPhone` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Đang đổ dữ liệu cho bảng `distributionagents`
---
-
-INSERT INTO `distributionagents` (`agentCode`, `agentName`, `agentAdress`, `agentCity`, `agentPhone`) VALUES
-(2, 'VIETTEL', 'a', 's', 'f');
-
 -- --------------------------------------------------------
 
 --
@@ -119,13 +103,6 @@ CREATE TABLE `factories` (
   `factoryCity` varchar(255) NOT NULL,
   `factoryPhone` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Đang đổ dữ liệu cho bảng `factories`
---
-
-INSERT INTO `factories` (`factoryCode`, `factoryAdress`, `factoryCity`, `factoryPhone`) VALUES
-(3, 'abc', 'abc', '0982817823');
 
 -- --------------------------------------------------------
 
@@ -244,13 +221,6 @@ CREATE TABLE `warrantycenters` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Đang đổ dữ liệu cho bảng `warrantycenters`
---
-
-INSERT INTO `warrantycenters` (`wcCode`, `wcAdress`, `wcCity`, `wcPhone`, `workingTime`) VALUES
-(1, 'abc', 'abc', 'acc', '8h00 - 17h00 từ thứ Hai đến thứ Bảy');
-
---
 -- Chỉ mục cho các bảng đã đổ
 --
 
@@ -265,8 +235,8 @@ ALTER TABLE `accounts`
 --
 ALTER TABLE `agentwarehouses`
   ADD PRIMARY KEY (`agentCode`),
-  ADD UNIQUE KEY `agentwarehouses_productCode_agentCode_unique` (`agentCode`,`productCode`),
-  ADD KEY `productCode` (`productCode`);
+  ADD UNIQUE KEY `agentwarehouses_bathCode_agentCode_unique` (`agentCode`,`bathCode`),
+  ADD KEY `bathCode` (`bathCode`);
 
 --
 -- Chỉ mục cho bảng `customers`
@@ -360,13 +330,13 @@ ALTER TABLE `customer_products`
 -- AUTO_INCREMENT cho bảng `distributionagents`
 --
 ALTER TABLE `distributionagents`
-  MODIFY `agentCode` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `agentCode` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `factories`
 --
 ALTER TABLE `factories`
-  MODIFY `factoryCode` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `factoryCode` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `productions`
@@ -384,7 +354,7 @@ ALTER TABLE `warranties`
 -- AUTO_INCREMENT cho bảng `warrantycenters`
 --
 ALTER TABLE `warrantycenters`
-  MODIFY `wcCode` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `wcCode` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
@@ -395,7 +365,7 @@ ALTER TABLE `warrantycenters`
 --
 ALTER TABLE `agentwarehouses`
   ADD CONSTRAINT `agentwarehouses_ibfk_1` FOREIGN KEY (`agentCode`) REFERENCES `distributionagents` (`agentCode`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `agentwarehouses_ibfk_2` FOREIGN KEY (`productCode`) REFERENCES `products` (`productCode`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `agentwarehouses_ibfk_2` FOREIGN KEY (`bathCode`) REFERENCES `productions` (`batchCode`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `customer_products`
@@ -403,18 +373,6 @@ ALTER TABLE `agentwarehouses`
 ALTER TABLE `customer_products`
   ADD CONSTRAINT `customer_products_ibfk_1` FOREIGN KEY (`customerCode`) REFERENCES `customers` (`customerCode`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `customer_products_ibfk_2` FOREIGN KEY (`productCode`) REFERENCES `products` (`productCode`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Các ràng buộc cho bảng `distributionagents`
---
-ALTER TABLE `distributionagents`
-  ADD CONSTRAINT `fk_distributionagents_accounts` FOREIGN KEY (`agentCode`) REFERENCES `accounts` (`id`) ON UPDATE CASCADE;
-
---
--- Các ràng buộc cho bảng `factories`
---
-ALTER TABLE `factories`
-  ADD CONSTRAINT `fk_factories_accounts` FOREIGN KEY (`factoryCode`) REFERENCES `accounts` (`id`) ON UPDATE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `productdetails`
@@ -440,12 +398,6 @@ ALTER TABLE `products`
 --
 ALTER TABLE `warranties`
   ADD CONSTRAINT `warranties_ibfk_1` FOREIGN KEY (`wcCode`) REFERENCES `warrantycenters` (`wcCode`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Các ràng buộc cho bảng `warrantycenters`
---
-ALTER TABLE `warrantycenters`
-  ADD CONSTRAINT `fk_warrantycenters_accounts` FOREIGN KEY (`wcCode`) REFERENCES `accounts` (`id`) ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

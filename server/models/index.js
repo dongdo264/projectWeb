@@ -66,13 +66,14 @@ agentWarehouse.belongsTo(distributionAgent, {
     targetKey: 'agentCode'
 })
 
-distributionAgent.hasMany(product, {
-    foreignKey: 'productCode'
-})
-product.belongsToMany(distributionAgent, {
+agentWarehouse.hasMany(product, {
     foreignKey: 'productCode',
-    through: agentWarehouse,
-    otherKey: 'agentCode'
+    otherKey: 'batchCode'
+})
+product.belongsToMany(agentWarehouse, {
+    foreignKey: 'productCode',
+    through: production,
+    otherKey: 'batchCode'
 })
 
 

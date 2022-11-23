@@ -8,7 +8,7 @@ module.exports = (db = require('../config/connectDB')) => {
         autoIncrement: true, 
         primaryKey: true
       },
-      productCode: {
+      bathCode: {
         type: DataTypes.INTEGER,
         allowNull: false
       }, 
