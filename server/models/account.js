@@ -19,6 +19,10 @@ module.exports = (db = require('../config/connectDB')) => {
     role: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    accStatus: {
+      type: DataTypes.STRING,
+      defaultValue: "active"
     }
   }, {
       timestamps: false
