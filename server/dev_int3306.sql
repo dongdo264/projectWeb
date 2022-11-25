@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th10 22, 2022 lúc 11:34 AM
+-- Thời gian đã tạo: Th10 25, 2022 lúc 04:45 PM
 -- Phiên bản máy phục vụ: 10.4.22-MariaDB
 -- Phiên bản PHP: 8.1.2
 
@@ -31,8 +31,28 @@ CREATE TABLE `accounts` (
   `id` int(11) NOT NULL,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role` int(11) NOT NULL
+  `role` int(11) NOT NULL,
+  `accStatus` varchar(255) DEFAULT 'active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Đang đổ dữ liệu cho bảng `accounts`
+--
+
+INSERT INTO `accounts` (`id`, `username`, `password`, `role`, `accStatus`) VALUES
+(4, 'factory1', '1234', 1, 'active'),
+(5, 'factory2', '12321', 1, 'active'),
+(60518352, 'dongdo', '12321', 3, 'active'),
+(70642695, 'admin', '123', 3, 'active'),
+(71203838, '20020393', 'dẳ', 1, 'active'),
+(71298891, 'admin123', '12321', 3, 'active'),
+(72399220, '20020393', '12321', 3, 'deleted'),
+(72410710, '200203931', '12321', 3, 'deleted'),
+(72413966, '2002039312', '12321', 3, 'active'),
+(72416464, '20020393123', '12321', 3, 'active'),
+(72426111, '20020393123432', '12321', 3, 'active'),
+(72442785, '20020393123432', '12321', 1, 'active'),
+(72449561, '20020393123432', '12321', 1, 'active');
 
 -- --------------------------------------------------------
 
@@ -91,6 +111,17 @@ CREATE TABLE `distributionagents` (
   `agentPhone` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Đang đổ dữ liệu cho bảng `distributionagents`
+--
+
+INSERT INTO `distributionagents` (`agentCode`, `agentName`, `agentAdress`, `agentCity`, `agentPhone`) VALUES
+(72399220, 'Nguyễn Văn A', 'a', 'Ha Noi', '0963712656'),
+(72410710, 'Nguyễn Văn A', 'a', 'Ha Noi', '0963712656'),
+(72413966, 'Nguyễn Văn A', 'a', 'Ha Noi', '0963712656'),
+(72416464, 'Nguyễn Văn A', 'a', 'Ha Noi', '0963712656'),
+(72426111, 'Nguyễn Văn A', 'a', 'Ha Noi', '0963712656');
+
 -- --------------------------------------------------------
 
 --
@@ -99,10 +130,22 @@ CREATE TABLE `distributionagents` (
 
 CREATE TABLE `factories` (
   `factoryCode` int(11) NOT NULL,
+  `factoryName` varchar(255) DEFAULT 'Nhà Máy',
   `factoryAdress` varchar(255) NOT NULL,
   `factoryCity` varchar(255) NOT NULL,
   `factoryPhone` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Đang đổ dữ liệu cho bảng `factories`
+--
+
+INSERT INTO `factories` (`factoryCode`, `factoryName`, `factoryAdress`, `factoryCity`, `factoryPhone`) VALUES
+(4, 'Nhà Máy 1', 'Ba vì - Hà Nội', 'Hà Nội', '0288999999'),
+(5, 'Nhà Máy 2', 'Thái Bình', 'Thái Bình', '0999999999'),
+(71203838, '2131wqesdf', '123', 'Ha Noi', '0332133188'),
+(72442785, 'Nguyễn Văn An', 'a', 'Ha Noi', '0963712656'),
+(72449561, 'Nguyễn Văn Ánh', 'a', 'Ha Noi', '0963712656');
 
 -- --------------------------------------------------------
 
@@ -330,13 +373,13 @@ ALTER TABLE `customer_products`
 -- AUTO_INCREMENT cho bảng `distributionagents`
 --
 ALTER TABLE `distributionagents`
-  MODIFY `agentCode` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `agentCode` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72426112;
 
 --
 -- AUTO_INCREMENT cho bảng `factories`
 --
 ALTER TABLE `factories`
-  MODIFY `factoryCode` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `factoryCode` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72449562;
 
 --
 -- AUTO_INCREMENT cho bảng `productions`
@@ -373,6 +416,18 @@ ALTER TABLE `agentwarehouses`
 ALTER TABLE `customer_products`
   ADD CONSTRAINT `customer_products_ibfk_1` FOREIGN KEY (`customerCode`) REFERENCES `customers` (`customerCode`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `customer_products_ibfk_2` FOREIGN KEY (`productCode`) REFERENCES `products` (`productCode`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `distributionagents`
+--
+ALTER TABLE `distributionagents`
+  ADD CONSTRAINT `fk_distributionagents_accounts` FOREIGN KEY (`agentCode`) REFERENCES `accounts` (`id`) ON UPDATE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `factories`
+--
+ALTER TABLE `factories`
+  ADD CONSTRAINT `fk_factories_accounts` FOREIGN KEY (`factoryCode`) REFERENCES `accounts` (`id`) ON UPDATE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `productdetails`

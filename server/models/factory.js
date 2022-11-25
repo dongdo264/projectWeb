@@ -8,6 +8,10 @@ module.exports = (db = require('../config/connectDB')) => {
         autoIncrement: true,
         primaryKey: true
       },
+      factoryName: {
+        type: DataTypes.STRING,
+        defaultValue: 'Nhà Máy'
+      },
       factoryAdress: {
         type: DataTypes.STRING,
         allowNull: false
