@@ -1,15 +1,24 @@
 const db = require('../models/index');
 const sequelize = require('sequelize');
+const bcrypt = require("bcryptjs");
 class adminController {
+
+    //LẤY TẤT CẢ ĐẠI LÝ
     async getAllAgents(req, res) {
         try {
             let data = await db.DistributionAgent.findAll({
                 raw: true,
                 include: [{
                     model: db.Account,
-                    attributes: ['accStatus']
+                    attributes: ['accStatus'],
+                    where: {
+                        accStatus: {
+                          [sequelize.Op.not]: 'deleted'
+                        }
+                    },
                 }
                 ],
+               
                 nest: true
             })
             return res.status(200).json({
@@ -25,7 +34,73 @@ class adminController {
             })
         }
     }
-    async deleteAgentById(req, res) {
+
+    // LẤY TẤT CẢ TRUNG TÂM BẢO HÀNH
+    async getAllWarrantyCenter(req, res) {
+        try {
+            let data = await db.WarrantyCenter.findAll({
+                raw: true,
+                include: [{
+                    model: db.Account,
+                    attributes: ['accStatus'],
+                    where: {
+                        accStatus: {
+                          [sequelize.Op.not]: 'deleted'
+                        }
+                    },
+                }
+                ],
+                
+                nest: true
+            })
+            return res.status(200).json({
+                errCode: 0,
+                msg: "Lấy thông tin trung tâm bảo hành thành công",
+                data
+            })
+        }catch(err) {
+            console.log(err);
+            return res.status(500).json({
+                errCode: 1,
+                msg: "Lỗi server"
+            })
+        }
+    }
+
+    //LẤY THÔNG TIN TẤT CẢ NHÀ MÁY
+    async getAllFactories(req, res) {
+        try {
+            let data = await db.Factory.findAll({
+                raw: true,
+                include: [{
+                    model: db.Account,
+                    attributes: ['accStatus'],
+                    where: {
+                        accStatus: {
+                          [sequelize.Op.not]: 'deleted'
+                        }
+                    },
+                }
+                ],
+                
+                nest: true
+            })
+            return res.status(200).json({
+                errCode: 0,
+                msg: "Lấy thông tin các nhà máy thành công",
+                data
+            })
+        }catch(err) {
+            console.log(err);
+            return res.status(500).json({
+                errCode: 1,
+                msg: "Lỗi server"
+            })
+        }
+    }
+
+    //XÓA USER THEO ID
+    async deleteUserById(req, res) {
         const id = req.query.id;
         if (!id) {
             return res.json({
@@ -49,37 +124,13 @@ class adminController {
         }catch(err) {
             console.log(err);
             return res.status(500).json({
-                errCode: 0,
-                msg: "Lỗi server"
-            })
-        }
-    }
-
-    async getAllFactories(req, res) {
-        try {
-            let data = await db.Factory.findAll({
-                raw: true,
-                include: [{
-                    model: db.Account,
-                    attributes: ['accStatus']
-                }
-                ],
-                nest: true
-            })
-            return res.status(200).json({
-                errCode: 0,
-                msg: "Lấy thông tin agents thành công",
-                data
-            })
-        }catch(err) {
-            console.log(err);
-            return res.status(500).json({
                 errCode: 1,
                 msg: "Lỗi server"
             })
         }
     }
 
+    //TẠO MỚI 1 USER (CẤP TÀI KHOẢN)
     async createNewUser(req, res) {
         let id = req.body.id;
         let username = req.body.username;
@@ -89,13 +140,15 @@ class adminController {
         let city = req.body.city;
         let phone = req.body.phone;
         let option = req.body.option;
+        const salt = await bcrypt.genSalt(10);
+        const hashed = await bcrypt.hash(password, salt);
         try {
             await db.Account.sequelize.query("SET FOREIGN_KEY_CHECKS = 0", null);
             if (option === 'daily') {
                 db.Account.create({
                     id: id,
                     username,
-                    password,
+                    hashed,
                     role: 3
                 })
                 db.DistributionAgent.create({
@@ -109,7 +162,7 @@ class adminController {
                 db.Account.create({
                     id: id,
                     username,
-                    password,
+                    hashed,
                     role: 1
                 })
                 db.Factory.create({
@@ -123,7 +176,7 @@ class adminController {
                 db.Account.create({
                     id: id,
                     username,
-                    password,
+                    hashed,
                     role: 2
                 })
                 db.WarrantyCenter.create({

@@ -1,9 +1,12 @@
 const authRouter = require("./auth");
-const userRouter = require("./user");
 const adminRouter = require("./admin");
+const { verifyTokenAndAdmin,
+    verifyTokenAndAgent,
+    verifyTokenAndFatory,
+    verifyTokenAndWcCenter } = require('../middleware/verifyToken');
 function route(app) {
     app.use("/api-auth", authRouter);
-    app.use("/api-user", userRouter);
-    app.use("/api-admin", adminRouter);
+    app.use("/api-admin",verifyTokenAndAdmin, adminRouter);
 }
+
 module.exports = route;

@@ -47,33 +47,33 @@ class userController {
         }
     }
 
-    async deleteUserById(req, res) {
-        try {
-            const id = req.query.id;
-            await db.Account.destroy({
-                where: {
-                    id : id
-                }
-            })
-            await db.User.update({
-                userStatus: 'deleted'
-            }, {
-                where: {
-                    userCode: id
-                }
-            })
-            return res.status(200).json({
-                errCode: 0,
-                msg: "Xóa user thành công!"
-            })
-        } catch(err) {
-            console.log(err);
-            res.status(500).json({
-                errCode: 1,
-                msg: "Lỗi server"
-            })
-        }
-    }
+    // async deleteUserById(req, res) {
+    //     try {
+    //         const id = req.query.id;
+    //         await db.Account.destroy({
+    //             where: {
+    //                 id : id
+    //             }
+    //         })
+    //         await db.User.update({
+    //             userStatus: 'deleted'
+    //         }, {
+    //             where: {
+    //                 userCode: id
+    //             }
+    //         })
+    //         return res.status(200).json({
+    //             errCode: 0,
+    //             msg: "Xóa user thành công!"
+    //         })
+    //     } catch(err) {
+    //         console.log(err);
+    //         res.status(500).json({
+    //             errCode: 1,
+    //             msg: "Lỗi server"
+    //         })
+    //     }
+    // }
 
     async getAllUser(req, res) {
         try {
