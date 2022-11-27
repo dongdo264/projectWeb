@@ -34,7 +34,8 @@ class AuthController {
                         return res.status(200).json({
                             errCode: 0,
                             msg: "Đăng nhập thành công!",
-                            token: token
+                            token: token,
+                            role: data.role
                         })
                     } catch (err) {
                         console.log(err)
