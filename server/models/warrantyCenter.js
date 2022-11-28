@@ -8,6 +8,10 @@ module.exports = (db = require('../config/connectDB')) => {
         autoIncrement: true, 
         primaryKey: true
       },
+      wcName: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
       wcAdress: {
         type: DataTypes.STRING,
         allowNull: false
