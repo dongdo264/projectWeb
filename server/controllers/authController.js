@@ -35,7 +35,9 @@ class AuthController {
                             errCode: 0,
                             msg: "Đăng nhập thành công!",
                             token: token,
-                            role: data.role
+                            username: data.username,
+                            role: data.role,
+                            isLoggedIn: true
                         })
                     } catch (err) {
                         console.log(err)
@@ -44,7 +46,8 @@ class AuthController {
             } else {
                 return res.status(404).json({
                     errCode: 0,
-                    msg: "Tài khoản hoặc mật khẩu không đúng!"
+                    msg: "Tài khoản hoặc mật khẩu không đúng!",
+                    isLoggedIn: false
                 })
             }
 
@@ -52,7 +55,8 @@ class AuthController {
             console.log(err);
                 return res.status(500).json({
                     errCode: 1,
-                    msg: "Lỗi server"
+                    msg: "Lỗi server",
+                    isLoggedIn: false
                 })
             }
         }

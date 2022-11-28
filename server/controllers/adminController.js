@@ -145,13 +145,13 @@ class adminController {
         try {
             await db.Account.sequelize.query("SET FOREIGN_KEY_CHECKS = 0", null);
             if (option === 'daily') {
-                db.Account.create({
+                await db.Account.create({
                     id: id,
                     username,
-                    hashed,
+                    password: hashed,
                     role: 3
                 })
-                db.DistributionAgent.create({
+                await db.DistributionAgent.create({
                     agentCode: id,
                     agentName: name,
                     agentAdress: adress,
@@ -159,13 +159,13 @@ class adminController {
                     agentPhone: phone
                 })
             } else if (option === 'cososanxuat') {
-                db.Account.create({
+                await db.Account.create({
                     id: id,
                     username,
-                    hashed,
+                    password: hashed,
                     role: 1
                 })
-                db.Factory.create({
+                await db.Factory.create({
                     factoryCode: id,
                     factoryName: name,
                     factoryAdress: adress,
@@ -173,13 +173,13 @@ class adminController {
                     factoryPhone: phone
                 })
             } else if (option === 'baohanh') {
-                db.Account.create({
+                await db.Account.create({
                     id: id,
                     username,
-                    hashed,
+                    password: hashed,
                     role: 2
                 })
-                db.WarrantyCenter.create({
+                await db.WarrantyCenter.create({
                     wcCode: id,
                     wcName: name,
                     wcAdress: adress,

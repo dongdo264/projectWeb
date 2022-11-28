@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th10 25, 2022 lúc 04:45 PM
+-- Thời gian đã tạo: Th10 28, 2022 lúc 10:10 AM
 -- Phiên bản máy phục vụ: 10.4.22-MariaDB
 -- Phiên bản PHP: 8.1.2
 
@@ -42,14 +42,21 @@ CREATE TABLE `accounts` (
 INSERT INTO `accounts` (`id`, `username`, `password`, `role`, `accStatus`) VALUES
 (4, 'factory1', '1234', 1, 'active'),
 (5, 'factory2', '12321', 1, 'active'),
+(999, 'admin', '$2a$10$Ov4o25GW0IoU12HRayCLNeq15hnX/.QCZpv6AkubvAxif23q6wmqy', 10, 'active'),
+(24484405, '20020393', '$2a$10$XSUAAoO.pR4FTlcCBt9GbOhgNBadCsctvcSJclmcy9YFL2uezB3g2', 3, 'active'),
+(24552084, '20020393', '$2a$10$MFGXN1ro0DK5G4zlUzDAouwtt3gFPco13dqE0OeoMFb1ekvztRzOa', 3, 'active'),
+(24594941, 'daily123', '$2a$10$QYFdbGKX2iqCLrSdJ.QGgOBE4EPxnqNosoARSfzElC2UJV1ZF6tRO', 3, 'active'),
+(24654325, 'daily1234', '$2a$10$j1BxibIXKdI1d39HR5mJueixsWL28C0L3Ec418BdC2hzR/4H5dyqq', 3, 'active'),
+(24934165, 'admin123', '$2a$10$hWa1yM0ZgYLrnhGnqmFkAOcafDqzwWTMZY7g8ihUZLtadXAWi8y7O', 3, 'active'),
+(26046077, 'baohanh1', '$2a$10$8cA5bJFm1IEwxwhOSCUDr.IV5O5jRvlD2NszGei9ANwmLSB1Q5ou2', 2, 'active'),
 (60518352, 'dongdo', '12321', 3, 'active'),
 (70642695, 'admin', '123', 3, 'active'),
 (71203838, '20020393', 'dẳ', 1, 'active'),
 (71298891, 'admin123', '12321', 3, 'active'),
 (72399220, '20020393', '12321', 3, 'deleted'),
 (72410710, '200203931', '12321', 3, 'deleted'),
-(72413966, '2002039312', '12321', 3, 'active'),
-(72416464, '20020393123', '12321', 3, 'active'),
+(72413966, '2002039312', '12321', 3, 'deleted'),
+(72416464, '20020393123', '12321', 3, 'deleted'),
 (72426111, '20020393123432', '12321', 3, 'active'),
 (72442785, '20020393123432', '12321', 1, 'active'),
 (72449561, '20020393123432', '12321', 1, 'active');
@@ -116,6 +123,10 @@ CREATE TABLE `distributionagents` (
 --
 
 INSERT INTO `distributionagents` (`agentCode`, `agentName`, `agentAdress`, `agentCity`, `agentPhone`) VALUES
+(24552084, 'do cong dong', 'hà nội', 'ád', 'ád'),
+(24594941, 'do cong dong', 'hà nội', 'ád', 'ád'),
+(24654325, 'do cong dong', 'hà nội', 'ád', 'ád'),
+(24934165, 'Nguyễn Văn A', 'hà nội', 'Ha Noi', '0963712656'),
 (72399220, 'Nguyễn Văn A', 'a', 'Ha Noi', '0963712656'),
 (72410710, 'Nguyễn Văn A', 'a', 'Ha Noi', '0963712656'),
 (72413966, 'Nguyễn Văn A', 'a', 'Ha Noi', '0963712656'),
@@ -260,8 +271,16 @@ CREATE TABLE `warrantycenters` (
   `wcAdress` varchar(255) NOT NULL,
   `wcCity` varchar(255) NOT NULL,
   `wcPhone` varchar(255) NOT NULL,
-  `workingTime` varchar(255) DEFAULT '8h00 - 17h00 từ thứ Hai đến thứ Bảy'
+  `workingTime` varchar(255) DEFAULT '8h00 - 17h00 từ thứ Hai đến thứ Bảy',
+  `wcName` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Đang đổ dữ liệu cho bảng `warrantycenters`
+--
+
+INSERT INTO `warrantycenters` (`wcCode`, `wcAdress`, `wcCity`, `wcPhone`, `workingTime`, `wcName`) VALUES
+(26046077, 'hà nội', 'Ha Noi', '0963712656', '8h00 - 17h00 từ thứ Hai đến thứ Bảy', 'Bảo hành 1');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -397,7 +416,7 @@ ALTER TABLE `warranties`
 -- AUTO_INCREMENT cho bảng `warrantycenters`
 --
 ALTER TABLE `warrantycenters`
-  MODIFY `wcCode` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `wcCode` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26046078;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
