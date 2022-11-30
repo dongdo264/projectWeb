@@ -10,8 +10,7 @@ module.exports = (db = require('../config/connectDB')) => {
       },
       agentName : {
         type: DataTypes.STRING,
-        allowNull: false,
-        defaultValue: 'VIETTEL'
+        allowNull: false
       }
       ,
       agentAdress: {
@@ -24,6 +23,9 @@ module.exports = (db = require('../config/connectDB')) => {
       },
       agentPhone: {
         type: DataTypes.STRING
+      },
+      avatar: {
+        type: DataTypes.BLOB('long'),
       }
     }, {
         timestamps: false
