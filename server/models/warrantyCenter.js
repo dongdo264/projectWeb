@@ -24,9 +24,8 @@ module.exports = (db = require('../config/connectDB')) => {
         type: DataTypes.STRING,
         allowNull: false
       },
-      workingTime: {
-        type: DataTypes.STRING,
-        defaultValue: '8h00 - 17h00 từ thứ Hai đến thứ Bảy'
+      avatar: {
+        type: DataTypes.BLOB('long'),
       }
     }, {
         timestamps: false

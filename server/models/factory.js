@@ -23,6 +23,9 @@ module.exports = (db = require('../config/connectDB')) => {
       factoryPhone: {
         type: DataTypes.STRING,
         allowNull: false
+      },
+      avatar: {
+        type: DataTypes.BLOB('long'),
       }
     }, {
         timestamps: false

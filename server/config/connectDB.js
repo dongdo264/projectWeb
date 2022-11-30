@@ -4,7 +4,8 @@ const { Sequelize } = require('sequelize');
 //Passing parameters separately (other dialects)
 const db = new Sequelize('dev_int3306', 'root', null, {
   host: 'localhost',
-  dialect: 'mysql'
+  dialect: 'mysql',
+  logging: false
 });
 
 try {
