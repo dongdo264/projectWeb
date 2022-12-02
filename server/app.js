@@ -13,10 +13,13 @@ const app = express();
 
 // lay du lieu tu form gui ve
 app.use(express.urlencoded({
+    limit: '50mb',
     extended : true
 }));
 app.use(bodyParser.urlencoded());
-app.use(bodyParser.json());
+app.use(bodyParser.json({
+    limit: '50mb'
+}));
 app.use(cors({origin: true}));
 app.set('trust proxy', 1) // trust first proxy
 app.use(session({

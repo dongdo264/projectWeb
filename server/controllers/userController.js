@@ -1,153 +1,75 @@
 const db = require('../models/index');
-const bcrypt  = require('bcryptjs');
 class userController {
-    async createUser(req, res) {
-        try {
-            let userName= req.body.userName;
-            let userDob= req.body.userDob;
-            let userAdress= req.body.userAdress;
-            let userPhone= req.body.userPhone;
-            let userEmail= req.body.userEmail;
-            let userStatus=  req.body.userStatus;
-            if (!userName || !userAdress || !userPhone || !userEmail) {
-                return res.status(200).json({
-                    errCode: 0,
-                    msg: "Missing params!"
-                })
-            }
-            let data = {
-                userCode: 5,
-                userName,
-                userDob,
-                userAdress,
-                userPhone,
-                userEmail,
-                userStatus
-            }
-            console.log(data);
-            await db.Customer.create({
-                userCode: Date.now() % 100000000,
-                userName,
-                userDob,
-                userAdress,
-                userPhone,
-                userEmail,
-                userStatus
-            });
-            return res.status(200).json({
-                errCode: 0,
-                msg: "Tạo user thành công!"
-            })
-        } catch(err) {
-            console.log(err);
-            return res.status(500).json({
-                errCode: 1,
-                msg: "Lỗi server"
-            })
-        }
-    }
-
-    // async deleteUserById(req, res) {
-    //     try {
-    //         const id = req.query.id;
-    //         await db.Account.destroy({
-    //             where: {
-    //                 id : id
-    //             }
-    //         })
-    //         await db.User.update({
-    //             userStatus: 'deleted'
-    //         }, {
-    //             where: {
-    //                 userCode: id
-    //             }
-    //         })
-    //         return res.status(200).json({
-    //             errCode: 0,
-    //             msg: "Xóa user thành công!"
-    //         })
-    //     } catch(err) {
-    //         console.log(err);
-    //         res.status(500).json({
-    //             errCode: 1,
-    //             msg: "Lỗi server"
-    //         })
-    //     }
-    // }
-
-    async getAllUser(req, res) {
-        try {
-            let data = await db.Customer.findAll({
-                raw: true
-            });
-            if (data) {
-                    return res.status(200).json({
-                    errCode: 0,
-                    data,
-                    msg: "get All user successfuly"
-                });
-            }
-        } catch(err) {
-            console.log(err);
-            return res.status(500).json({
-                errCode: 1,
-                msg: "Lỗi server"
-            })
-        }
-    }
-
-    async getUserById(req, res) {
+    async getProfileUserById(req, res) {
         try {
             const id = req.query.id;
-            let data = await db.Customer.findOne({
-                where: {
-                    userCode: id
-                },
-                include: [
-                    {
-                        model: db.Account
-                    }
-                ],
-                raw: true,
-                nest: true
-            });
-            console.log(data.userAdress)
-            if (data) {
-                    return res.status(200).json({
-                    errCode: 0,
-                    data,
-                    msg: "get All user successfuly"
-                });
-            }
-        } catch(err) {
-            console.log(err);
-            return res.status(500).json({
-                errCode: 1,
-                msg: "Lỗi server"
-            })
-        }
-    }
-
-    async getAllProduct(req, res) {
-        try {
-            let data = await db.Product.findAll({
-                raw: true,
-                include: [
-                    {
-                    model: db.Productdetail
-                    }
-                ]
-            })
-            if (data) {
+            if (!id) {
                 return res.status(200).json({
-                    errCode: 0,
-                    msg: "Lấy thông tin sản phẩm thành công",
-                    data: data
+                    errCode: 2,
+                    msg: "Missing params"
                 })
             } else {
+                const data = await db.Account.findOne({
+                    where: {
+                        id: id
+                    }
+                })
+                let infoUser = null;
+                let role = null;
+                if (data.role === 3) {
+                    infoUser = await db.DistributionAgent.findOne({
+                        where: {
+                            agentCode: id
+                        },
+                        attributes: [
+                            ['agentCode', 'id'],
+                            ['agentName', 'name'],
+                            ['agentAdress', 'adress'],
+                            ['agentCity', 'city'],
+                            ['agentPhone', 'phone'],
+                            'avatar',
+                            'email'
+                        ]
+                    })
+                    role = 'Đại lý phân phối';
+                } else if (data.role === 2) {
+                    infoUser = await db.WarrantyCenter.findOne({
+                        where: {
+                            wcCode: id
+                        },
+                        attributes: [
+                            ['wcCode', 'id'],
+                            ['wcName', 'name'],
+                            ['wcAdress', 'adress'],
+                            ['wcCity', 'city'],
+                            ['wcPhone', 'phone'],
+                            'avatar',
+                            'email'
+                        ]
+                    })
+                    role = 'Trung tâm bảo hành';
+                } else if (data.role === 1) {
+                    infoUser = await db.Factory.findOne({
+                        where: {
+                            factoryCode: id
+                        },
+                        attributes: [
+                            ['factoryCode', 'id'],
+                            ['factoryName', 'name'],
+                            ['factoryAdress', 'adress'],
+                            ['factoryCity', 'city'],
+                            ['factoryPhone', 'phone'],
+                            'avatar',
+                            'email'
+                        ]
+                    })
+                    role = 'Cơ sở sản xuất';
+                }
                 return res.status(200).json({
                     errCode: 0,
-                    msg: "Lấy thông tin sản phẩm không thành công"
+                    msg: "Get info user successfully",
+                    infoUser,
+                    role
                 })
             }
         }catch(err) {

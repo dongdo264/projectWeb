@@ -26,6 +26,11 @@ module.exports = (db = require('../config/connectDB')) => {
       },
       avatar: {
         type: DataTypes.BLOB('long'),
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'N/A'
       }
     }, {
         timestamps: false
