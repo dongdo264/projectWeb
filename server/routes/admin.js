@@ -6,5 +6,6 @@ router.get("/getAllAgents", adminController.getAllAgents);
 router.get("/getAllFactories", adminController.getAllFactories);
 router.delete("/deleteAgentById", adminController.deleteUserById);
 router.post("/createNewUser", adminController.createNewUser);
-router.get("/getAllWarrantyCenter", adminController.getAllWarrantyCenter)
+router.get("/getAllWarrantyCenter", adminController.getAllWarrantyCenter);
+router.get("/getAllProductlines", adminController.getAllProductlines);
 module.exports = router;

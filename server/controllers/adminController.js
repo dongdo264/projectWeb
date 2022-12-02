@@ -201,6 +201,39 @@ class adminController {
         }
     }
     
-
+    // Lấy tất cả dòng sản phẩm
+    async getAllProductlines(req, res) {
+        try {
+            let data = await db.ProductLine.findAll({
+                logging: true,
+                attributes: [
+                    '*'
+                    
+                ],
+                include: [
+                    {
+                    model: db.Product,
+                    attributes: [
+                        [sequelize.fn('count', sequelize.col('products.productCode')), 'count'],
+                    ],
+                    
+                    }
+                ],
+                raw: true,
+                group: ['productlines.productLine']
+            })
+            return res.status(200).json({
+                errCode: 0,
+                msg: "Lấy thông tin dòng sản phẩm thành công!",
+                data
+            })
+        }catch(err) {
+            console.log(err);
+            return res.status(500).json({
+                errCode: 1,
+                msg: "Lỗi server"
+            })
+        }
+    }
 }
 module.exports = new adminController;

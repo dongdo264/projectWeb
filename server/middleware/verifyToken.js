@@ -45,7 +45,7 @@ const verifyTokenAndWcCenter = (req, res, next) => {
   };
   const verifyTokenAndFatory = (req, res, next) => {
     verifyToken(req, res, () => {
-      if (req.user.roke === 1 || req.user.role === 10) {
+      if (req.user.role === 1 || req.user.role === 10) {
         next();
       } else {
         res.status(403).json("You're not allowed to do that!");

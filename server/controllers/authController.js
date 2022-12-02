@@ -37,7 +37,8 @@ class AuthController {
                             token: token,
                             username: data.username,
                             role: data.role,
-                            isLoggedIn: true
+                            isLoggedIn: true,
+                            id: data.id
                         })
                     } catch (err) {
                         console.log(err)

@@ -10,6 +10,11 @@ module.exports = (db = require('../config/connectDB')) => {
       textDescription: {
         type: DataTypes.STRING(4000),
         allowNull: false,
+      },
+      status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'Active'
       }
     }, {
         timestamps: false
