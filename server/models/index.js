@@ -11,8 +11,10 @@ const CustomerProduct = require('./customer_product');
 const Production = require('./production');
 const Productdetail = require('./productdetails');
 const Warranty = require('./warranty');
+const Admin = require('./admin');
 
 const account = Account(db);
+const admin = Admin(db);
 const customer = Customer(db);
 const agentWarehouse = AgentWarehouse(db);
 const distributionAgent = DistributionAgent(db);
@@ -33,6 +35,13 @@ distributionAgent.belongsTo(account, {
     targetKey: "id",
 });
 
+account.hasOne(admin, {
+    foreignKey: 'adminCode'
+})
+admin.belongsTo(account, {
+    foreignKey: "adminCode",
+    targetKey: "id",
+})
 account.hasOne(factories, {
     foreignKey: 'factoryCode'
 })
@@ -128,6 +137,7 @@ db.sync({alter: true});
 module.exports = {
     Account: account, 
     Customer: customer,
+    Admin: admin,
     AgentWarehouse: agentWarehouse,
     DistributionAgent: distributionAgent,
     Factory: factories,

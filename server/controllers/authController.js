@@ -18,6 +18,32 @@ class AuthController {
                     username: username
                 }
             });
+            let info = null;
+            if (data.role === 1) {
+                info = await db.Factory.findOne({
+                    where: {
+                        factoryCode : data.id,
+                    }
+                })
+            } else if (data.role === 2) {
+                info = await db.WarrantyCenter.findOne({
+                    where: {
+                        wcCode : data.id,
+                    }
+                })
+            } else if (data.role === 3) {
+                info = await db.DistributionAgent.findOne({
+                    where: {
+                        agentCode : data.id,
+                    }
+                })
+            } else if (data.role === 10) {
+                info = await db.Admin.findOne({
+                    where: {
+                        adminCode : data.id,
+                    }
+                })
+            }
 
             if (data) {
                 const validPassword = await bcrypt.compare(
@@ -38,7 +64,8 @@ class AuthController {
                             username: data.username,
                             role: data.role,
                             isLoggedIn: true,
-                            id: data.id
+                            id: data.id,
+                            avatar: info.avatar
                         })
                     } catch (err) {
                         console.log(err)

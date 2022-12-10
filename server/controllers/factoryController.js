@@ -1,13 +1,14 @@
 const db = require('../models/index');
 class FactoryController {
-    async productions(req, res) {
+    //Thêm mới sản phẩm
+    async createproduct(req, res) {
         try {
             let id = req.body.id;
             let product = req.body.product;
             let productdetail = req.body.productdetail
             let avatar = req.body.avatar;
-            console.log(product)
-            console.log(productdetail)
+            // console.log(product)
+            // console.log(productdetail)
             //console.log(avatar)
             if (!product || !productdetail) {
                 return res.status(200).json({
@@ -50,5 +51,27 @@ class FactoryController {
             })
         }
     }
+
+    //Lấy thông tin các sản phẩm
+    async getAllProducts(req, res) {
+        try{
+            let data = await db.Product.findAll({
+                raw: true,
+            })
+            return res.status(200).json({
+                errCode: 0,
+                msg: 'Lấy thông tin sản phẩm thành công!',
+                data
+            })
+        }catch(err) {
+            console.log(err);
+            return res.status(500).json({
+                errCode: 1,
+                msg: 'Lỗi server'
+            })
+        }
+    }
+
+
 }
 module.exports = new FactoryController;

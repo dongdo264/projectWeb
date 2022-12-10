@@ -1,4 +1,4 @@
-module.exports = (db = require('../config/connectDB')) => {
+module.exports = (db) => {
     const {DataTypes} = require('sequelize');
     const Product = db.define('products', {
       // Model attributes are defined here
@@ -21,14 +21,20 @@ module.exports = (db = require('../config/connectDB')) => {
       },
       productStatus: {
         type: DataTypes.STRING,
-        defaultValue: 'SELLING'
+        defaultValue: 'Active'
       },
       warrantyPeriod: {
         type: DataTypes.STRING,
         defaultValue: '60 tháng'
       },
       avatar: {
-        type: DataTypes.BLOB('long')
+        type: DataTypes.BLOB('long'),
+        allowNull: true
+      },
+      status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'Active'
       }
     }, {
         timestamps: false

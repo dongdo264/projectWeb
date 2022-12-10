@@ -1,4 +1,4 @@
-module.exports = (db = require('../config/connectDB')) => {
+module.exports = (db) => {
   const {DataTypes} = require('sequelize');
   const Account = db.define('accounts', {
     // Model attributes are defined here
@@ -20,9 +20,9 @@ module.exports = (db = require('../config/connectDB')) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    accStatus: {
+    status: {
       type: DataTypes.STRING,
-      defaultValue: "active"
+      defaultValue: "Active"
     }
   }, {
       timestamps: false

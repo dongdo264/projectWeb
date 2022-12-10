@@ -1,28 +1,31 @@
 module.exports = (db) => {
     const {DataTypes} = require('sequelize');
-    const DistributionAgent = db.define('distributionagents', {
+    const Admin = db.define('admins', {
       // Model attributes are defined here
-      agentCode: {
+      adminCode: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        autoIncrement: true, 
+        autoIncrement: true,
         primaryKey: true
       },
-      agentName : {
+      adminName: {
         type: DataTypes.STRING,
-        allowNull: false
-      }
-      ,
-      agentAdress: {
-        type: DataTypes.STRING,
-        allowNull: false
+        defaultValue: 'N/A'
       },
-      agentCity: {
+      adminAdress: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        defaultValue: 'N/A'
       },
-      agentPhone: {
-        type: DataTypes.STRING
+      adminCity: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'N/A'
+      },
+      adminPhone: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'N/A'
       },
       avatar: {
         type: DataTypes.BLOB('long'),
@@ -35,5 +38,5 @@ module.exports = (db) => {
     }, {
         timestamps: false
     });
-    return DistributionAgent;
+    return Admin;
   }

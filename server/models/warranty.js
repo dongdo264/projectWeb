@@ -1,4 +1,4 @@
-module.exports = (db = require('../config/connectDB')) => {
+module.exports = (db) => {
     const {DataTypes, NOW} = require('sequelize');
     const Warranty = db.define('warranty', {
       // Model attributes are defined here
