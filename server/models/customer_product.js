@@ -1,4 +1,4 @@
-module.exports = (db = require('../config/connectDB')) => {
+module.exports = (db) => {
     const {DataTypes, NOW } = require('sequelize');
     const CustomerProduct = db.define('customer_products', {
       

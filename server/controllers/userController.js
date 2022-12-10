@@ -79,6 +79,37 @@ class userController {
             })
         }
     }
+    async getInfoProductById(req, res) {
+        try {
+            const id = req.params.id;
+            let data = await db.Productdetail.findOne({
+                where: {
+                    productCode: id
+                },
+                include: [
+                    {
+                        model: db.Product,
+                        attributes: ['productName', 'productLine', 'avatar']
+                    }
+                ]
+            })
+            if (data) {
+                return res.status(200).json({
+                    errCode: 0,
+                    msg: 'Lấy thông tin sản phẩm thành công!',
+                    data
+                })
+            } else {
+                return res.status(404).json({
+                    msg: 'Không tìm thấy info sản phẩm này!',
+                    errCode: 2
+                })
+            }
+        } catch(err){
+            console.log(err);
+            return res.status(500).json("Lỗi server!");
+        }
+    }
 
 }
 module.exports = new userController;

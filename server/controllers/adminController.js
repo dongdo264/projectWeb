@@ -10,9 +10,9 @@ class adminController {
                 raw: true,
                 include: [{
                     model: db.Account,
-                    attributes: ['accStatus'],
+                    attributes: ['status'],
                     where: {
-                        accStatus: {
+                        status: {
                           [sequelize.Op.not]: 'deleted'
                         }
                     },
@@ -42,9 +42,9 @@ class adminController {
                 raw: true,
                 include: [{
                     model: db.Account,
-                    attributes: ['accStatus'],
+                    attributes: ['status'],
                     where: {
-                        accStatus: {
+                        status: {
                           [sequelize.Op.not]: 'deleted'
                         }
                     },
@@ -74,9 +74,9 @@ class adminController {
                 raw: true,
                 include: [{
                     model: db.Account,
-                    attributes: ['accStatus'],
+                    attributes: ['status'],
                     where: {
-                        accStatus: {
+                        status: {
                           [sequelize.Op.not]: 'deleted'
                         }
                     },
@@ -110,7 +110,7 @@ class adminController {
         }
         try {
             await db.Account.update({
-                accStatus: 'deleted'
+                status: 'deleted'
             },
                 {
                 where: {
