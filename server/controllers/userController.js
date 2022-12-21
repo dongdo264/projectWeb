@@ -1,4 +1,5 @@
 const db = require('../models/index');
+const sequelize = require('sequelize');
 class userController {
     async getProfileUserById(req, res) {
         try {
@@ -110,6 +111,142 @@ class userController {
             return res.status(500).json("Lỗi server!");
         }
     }
+
+        //Lấy thông tin các sản phẩm
+    async getAllProducts(req, res) {
+        try{
+            let data = await db.Product.findAll({
+                    raw: true,
+                })
+                return res.status(200).json({
+                    errCode: 0,
+                    msg: 'Lấy thông tin sản phẩm thành công!',
+                    data
+                })
+        }catch(err) {
+                console.log(err);
+                return res.status(500).json({
+                    errCode: 1,
+                    msg: 'Lỗi server'
+                })
+            }
+    }
+
+        //LẤY TẤT CẢ ĐẠI LÝ
+        async getAllAgents(req, res) {
+            try {
+                let data = await db.DistributionAgent.findAll({
+                    raw: true,
+                    include: [{
+                        model: db.Account,
+                        attributes: ['status'],
+                        where: {
+                            status: {
+                              [sequelize.Op.not]: 'deleted'
+                            }
+                        },
+                    }
+                    ],
+                   
+                    nest: true
+                })
+                return res.status(200).json({
+                    errCode: 0,
+                    msg: "Lấy thông tin agents thành công",
+                    data
+                })
+            }catch(err) {
+                console.log(err);
+                return res.status(500).json({
+                    errCode: 0,
+                    msg: "Lỗi server"
+                })
+            }
+        }
+    
+        // LẤY TẤT CẢ TRUNG TÂM BẢO HÀNH
+        async getAllWarrantyCenter(req, res) {
+            try {
+                let data = await db.WarrantyCenter.findAll({
+                    raw: true,
+                    include: [{
+                        model: db.Account,
+                        attributes: ['status'],
+                        where: {
+                            status: {
+                              [sequelize.Op.not]: 'deleted'
+                            }
+                        },
+                    }
+                    ],
+                    
+                    nest: true
+                })
+                return res.status(200).json({
+                    errCode: 0,
+                    msg: "Lấy thông tin trung tâm bảo hành thành công",
+                    data
+                })
+            }catch(err) {
+                console.log(err);
+                return res.status(500).json({
+                    errCode: 1,
+                    msg: "Lỗi server"
+                })
+            }
+        }
+    
+        //LẤY THÔNG TIN TẤT CẢ NHÀ MÁY
+        async getAllFactories(req, res) {
+            try {
+                let data = await db.Factory.findAll({
+                    raw: true,
+                    include: [{
+                        model: db.Account,
+                        attributes: ['status'],
+                        where: {
+                            status: {
+                              [sequelize.Op.not]: 'deleted'
+                            }
+                        },
+                    }
+                    ],
+                    
+                    nest: true
+                })
+                return res.status(200).json({
+                    errCode: 0,
+                    msg: "Lấy thông tin các nhà máy thành công",
+                    data
+                })
+            }catch(err) {
+                console.log(err);
+                return res.status(500).json({
+                    errCode: 1,
+                    msg: "Lỗi server"
+                })
+            }
+        }
+
+        async getAllProductLines(req, res) {
+            try{
+                let data = await db.ProductLine.findAll({
+                    raw: true
+                })
+                return res.status(200).json({
+                    errCode: 0,
+                    msg: "Lấy thông tin các dòng sản phẩm",
+                    data
+                })
+
+            }catch(err) {
+                console.log(err);
+                return res.status(500).json({
+                    errCode: 1,
+                    msg: "Lỗi server"
+                })
+            }
+        }
 
 }
 module.exports = new userController;

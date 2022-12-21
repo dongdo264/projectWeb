@@ -207,8 +207,7 @@ class adminController {
             let data = await db.ProductLine.findAll({
                 logging: true,
                 attributes: [
-                    '*'
-                    
+                    '*'   
                 ],
                 include: [
                     {

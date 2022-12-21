@@ -1,24 +1,32 @@
 module.exports = (db) => {
     const {DataTypes} = require('sequelize');
-    const AgentWarehouse = db.define('agentwarehouse', {
+    const Orderdetail = db.define('orderdetails', {
       // Model attributes are defined here
-      agentCode: {
+      
+      orderNumber: {
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true, 
         primaryKey: true
       },
-      bathCode: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-      }, 
-      quantityInStock: {
+      productCode: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        defaultValue: 0
+        primaryKey: true
+      },
+      quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        
+      },
+      color: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'Đen',
+        primaryKey: true
       }
     }, {
         timestamps: false
     });
-    return AgentWarehouse;
+    return Orderdetail;
   }
