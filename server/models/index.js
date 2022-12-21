@@ -1,31 +1,19 @@
 let db = require('../config/connectDB');
-const Account = require('./account');
-const Customer = require('./customers');
-const AgentWarehouse = require('./agentWarehouse');
-const DistributionAgent = require('./distributionAgent');
-const Factory = require('./factory');
-const Product = require('./product');
-const ProductLine = require('./productline');
-const WarrantyCenter = require('./warrantyCenter');
-const CustomerProduct = require('./customer_product');
-const Production = require('./production');
-const Productdetail = require('./productdetails');
-const Warranty = require('./warranty');
-const Admin = require('./admin');
-
-const account = Account(db);
-const admin = Admin(db);
-const customer = Customer(db);
-const agentWarehouse = AgentWarehouse(db);
-const distributionAgent = DistributionAgent(db);
-const factories = Factory(db);
-const product = Product(db);
-const productLine = ProductLine(db);
-const warrantyCenter = WarrantyCenter(db);
-const customer_product = CustomerProduct(db);
-const production = Production(db);
-const productdetails = Productdetail(db);
-const warranty = Warranty(db);
+const account = require('./account.model')(db);
+const customer = require('./customers.model')(db);
+const agentWarehouse = require('./agentWarehouse.model')(db);
+const distributionAgent = require('./distributionAgent.model')(db);
+const factories = require('./factory.model')(db);
+const product = require('./product.model')(db);
+const productLine = require('./productline.model')(db);
+const warrantyCenter = require('./warrantyCenter.model')(db);
+const customer_product = require('./customer_product.model')(db);
+const production = require('./production.model')(db);
+const productdetails = require('./productdetails.model')(db);
+const warranty = require('./warranty.model')(db);
+const admin = require('./admin.model')(db);
+const order = require('./order.model')(db);
+const orderdetails = require('./orderdetails.model')(db);
 
 account.hasOne(distributionAgent, {
     foreignKey: "agentCode"
@@ -131,6 +119,14 @@ warranty.belongsTo(warrantyCenter, {
     targetKey: 'wcCode'
 })
 
+order.hasMany(orderdetails, {
+    foreignKey: 'orderNumber'
+})
+orderdetails.belongsTo(order, {
+    foreignKey: 'orderNumber',
+    targetKey: 'orderNumber'
+})
+
 
 db.sync({alter: true});
 
@@ -147,5 +143,7 @@ module.exports = {
     CustomerProduct: customer_product,
     Production: production,
     Productdetail: productdetails,
-    Warranty: warranty
+    Warranty: warranty,
+    Order: order,
+    OrderDetail: orderdetails
 }

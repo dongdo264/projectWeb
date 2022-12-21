@@ -15,8 +15,7 @@ module.exports = (db) => {
       },
       factoryCode: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        primaryKey: true
+        allowNull: false
       },
       MFG: {
         type: DataTypes.DATEONLY,
@@ -26,9 +25,19 @@ module.exports = (db) => {
       color: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: 'Đen'
+        defaultValue: 'Đen',
+        primaryKey: true
       },
-      quantityInStock: {
+      quantityProduced: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+      },
+      status: {
+        type: DataTypes.STRING,
+        defaultValue: "Active"
+      },
+      quantitySold: {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0

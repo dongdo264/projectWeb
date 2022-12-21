@@ -1,5 +1,5 @@
 module.exports = (db) => {
-    const {DataTypes} = require('sequelize');
+    const {DataTypes, NOW} = require('sequelize');
     const Product = db.define('products', {
       // Model attributes are defined here
       productCode: {
@@ -19,10 +19,6 @@ module.exports = (db) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      productStatus: {
-        type: DataTypes.STRING,
-        defaultValue: 'Active'
-      },
       warrantyPeriod: {
         type: DataTypes.STRING,
         defaultValue: '60 tháng'
@@ -35,6 +31,11 @@ module.exports = (db) => {
         type: DataTypes.STRING,
         allowNull: false,
         defaultValue: 'Active'
+      },
+      createAt: {
+        type: DataTypes.DATEONLY,
+        allowNull: true,
+        defaultValue: NOW
       }
     }, {
         timestamps: false
