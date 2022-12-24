@@ -12,6 +12,10 @@ module.exports = (db) => {
         type: DataTypes.INTEGER,
         allowNull: false
       },
+      agentCode: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       model: {
         type: DataTypes.INTEGER,
         allowNull: true
@@ -29,9 +33,14 @@ module.exports = (db) => {
         type: DataTypes.DATEONLY,
         allowNull: true
       },
-      warrantyStatus: {
+      status: {
         type: DataTypes.STRING(4000),
         allowNull: true
+      },
+      note: {
+        type: DataTypes.STRING(4000),
+        allowNull: false,
+        defaultValue: 'Không'
       }
     }, {
         timestamps: false

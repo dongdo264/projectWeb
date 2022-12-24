@@ -117,6 +117,9 @@ class userController {
         try{
             let data = await db.Product.findAll({
                     raw: true,
+                    order: [
+                        ['createAt', 'DESC'],   
+                    ],
                 })
                 return res.status(200).json({
                     errCode: 0,

@@ -14,23 +14,19 @@ module.exports = (db) => {
         allowNull: false,
         primaryKey: true
       },
-      agentCode: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-      },
-      productCode: {
+      batchCode: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        primaryKey: true
       },
       dateOfPurchase: {
         type: DataTypes.DATEONLY,
         allowNull: false,
         defaultValue: NOW
       },
-      productStatus: {
+      status: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        defaultValue: 'Active'
       }
     }, {
         timestamps: false

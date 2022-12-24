@@ -165,8 +165,18 @@ class FactoryController {
                     'color',
                     [sequelize.fn('sum', sequelize.where(sequelize.col('quantityProduced'), '-', sequelize.col('quantitySold'))), 'sum']
                 ],
-                group: ['productCode', 'color']
+                group: ['productCode', 'color'],
+                raw: true
             })
+            for (let i in data) {
+                let product = await db.Product.findOne({
+                    where: {
+                        productCode: data[i].productCode
+                    },
+                    raw: true
+                })
+               data[i].productName = product.productName;
+            }
             return res.status(200).json({
                 errCode: 0,
                 msg: 'Xem kho hàng thành công!',
@@ -179,7 +189,5 @@ class FactoryController {
     }
 
     
-
-
 }
 module.exports = new FactoryController;

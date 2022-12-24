@@ -9,30 +9,39 @@ module.exports = (db) => {
       autoIncrement: true,
       primaryKey: true,
     },
+    agentCode: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     customerName: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    customerDob: {
+    dob: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: false,
+      defaultValue: 'N/A'
     },
-    customerAdress: {
+    adress: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    customerPhone: {
+    phone: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    customerEmail: {
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'N/A'
+    },
+    status: {
       type: DataTypes.STRING,
       allowNull: true
     },
-    customerStatus: {
-      type: DataTypes.STRING,
-      allowNull: true
-    }
+    avatar: {
+      type: DataTypes.BLOB('long'),
+    },
   }, {
       timestamps: false
   });
