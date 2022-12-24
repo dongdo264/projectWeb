@@ -73,17 +73,47 @@ product.belongsToMany(agentWarehouse, {
     otherKey: 'batchCode'
 })
 
-
-customer.hasMany(product, {
-    foreignKey: 'productCode',
-    otherKey: 'customerCode'
+customer.hasMany(customer_product, {
+    foreignKey: 'customerCode',
+})
+customer_product.belongsTo(customer, {
+    foreignKey: 'customerCode',
+    targetKey: 'customerCode'
 })
 
-product.belongsToMany(customer, {
-    foreignKey: 'productCode', 
-    through: customer_product,
-    otherKey: 'customerCode'
+agentWarehouse.hasMany(customer_product, {
+    foreignKey: 'batchCode'
 })
+
+customer_product.belongsTo(agentWarehouse, {
+    foreignKey: 'batchCode',
+    targetKey: 'batchCode'
+})
+
+distributionAgent.hasMany(customer, {
+    foreignKey: 'agentCode'
+})
+customer.belongsTo(distributionAgent, {
+    foreignKey: 'agentCode',
+    targetKey: 'agentCode'
+})
+// customer_product.hasMany(production, {
+//     foreignKey: 'batchCode',
+// })
+
+// production.belongsTo(customer_product, {
+//     foreignKey: 'batchCode', 
+//     targetKey: 'batchCode'
+// })
+// customer.hasMany(agentWarehouse, {
+//     foreignKey: 'productCode',
+//     otherKey: 'factoryCode'
+// })
+// product.belongsToMany(factories, {
+//     foreignKey: 'productCode',
+//     through: production,
+//     otherKey: 'factoryCode'
+// })
 
 factories.hasMany(product, {
     foreignKey: 'productCode',

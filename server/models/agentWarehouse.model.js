@@ -9,19 +9,28 @@ module.exports = (db) => {
         autoIncrement: true, 
         primaryKey: true
       },
-      bathCode: {
+      batchCode: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        primaryKey: true
       }, 
       productCode: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        primaryKey: true
       },
-      orderNumber: {
+      quantityImported: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        defaultValue: 0
       },
-      quantityInStock: {
+      color: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'Đen',
+        primaryKey: true
+      },
+      quantitySold: {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0
@@ -29,7 +38,7 @@ module.exports = (db) => {
       status: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: 'Pending'
+        defaultValue: 'Active'
       }
     }, {
         timestamps: false
