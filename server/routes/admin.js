@@ -8,4 +8,5 @@ router.delete("/deleteAgentById", adminController.deleteUserById);
 router.post("/createNewUser", adminController.createNewUser);
 router.get("/getAllWarrantyCenter", adminController.getAllWarrantyCenter);
 router.get("/getAllProductlines", adminController.getAllProductlines);
+router.post("/productline", adminController.newProductLine)
 module.exports = router;

@@ -14,6 +14,7 @@ const warranty = require('./warranty.model')(db);
 const admin = require('./admin.model')(db);
 const order = require('./order.model')(db);
 const orderdetails = require('./orderdetails.model')(db);
+const faultyproducts = require('./faultyProduct.model')(db)
 
 account.hasOne(distributionAgent, {
     foreignKey: "agentCode"
@@ -175,5 +176,6 @@ module.exports = {
     Productdetail: productdetails,
     Warranty: warranty,
     Order: order,
-    OrderDetail: orderdetails
+    OrderDetail: orderdetails,
+    FaultyProduct: faultyproducts
 }

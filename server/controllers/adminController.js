@@ -234,5 +234,23 @@ class adminController {
             })
         }
     }
+
+    async newProductLine(req, res) {
+        try{
+            const data = req.body.data;
+            await db.ProductLine.create({
+                productLine: data.productLine,
+                textDescription: data.textDescription,
+                status: data.status
+            })
+            return res.status(200).json({
+                errCode: 0,
+                msg: "Tạo sản phẩm thành công!"
+            })
+        }catch(err) {
+            console.log(err);
+            return res.status(500).json("Lỗi server!");
+        }
+    }
 }
 module.exports = new adminController;

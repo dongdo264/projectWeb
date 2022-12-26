@@ -153,6 +153,7 @@ class FactoryController {
         }
     }
 
+    //Lấy kho hàng của nhà máy
     async getFactoryWarehouse(req, res) {
         try{
             const factoryCode = req.user.id;
@@ -187,6 +188,98 @@ class FactoryController {
             return res.status(500).json("Lỗi server!")
         }
     }
+
+    //Lấy các sản phẩm lỗi được gửi về nhà máy
+    async getAllFaultyProducts(req, res) {
+        try{
+            const factoryCode = req.user.id;
+            let data = await db.FaultyProduct.findAll({
+                where: {
+                    factoryCode
+                }
+            })
+            return res.status(200).json({
+                errCode: 0,
+                data
+            })
+        }catch(err) {
+            console.log(err);
+            return res.status(500).json("Lỗi server!");
+        }
+    }
+
+    //Phân tích sản phẩm sản xuất
+    async analyzQuantityProduced(req, res) {
+        try{
+            const factoryCode = req.user.id;
+            const type = req.query.type;
+            const d = new Date();
+            const year = d.getFullYear();
+            if (type === "month" || type === "quarter") {
+                let data = await db.Production.findAll({
+                    where: {
+                        createdAt: sequelize.where(
+                          sequelize.fn("YEAR", sequelize.col("MFG")),
+                          year),
+                        factoryCode
+                      },
+                      attributes: [
+                        [sequelize.fn("MONTH", sequelize.col("MFG")), "month"],
+                        [sequelize.fn('SUM', sequelize.col('quantityProduced')), 'sum']
+                      ],
+                      group: ["month"],
+                      raw: true
+                })
+                let result = [];
+                for (let i = 1; i <= 12; i++) {
+                    let check = true;
+                    for (let j in data) {
+                        if (data[j].month === i) { 
+                            result.push(data[j]);
+                            check = false;
+                            break;
+                        }
+                    }
+                    if (check) {
+                        let obj= {};
+                        obj.month = "Tháng " + i;
+                        obj.sum = 0;
+                        result.push(obj);
+                    }
+                }
+                if (type === 'quarter') {
+                    let arr = [];
+                    let sum = 0;
+                    let k = 1;
+                    for (let i = 0;i < 12; i++) {
+                        sum += parseInt(result[i].sum);
+                        if (i === 2 || i === 5 || i === 8 || i === 11) {
+                            let obj = {};
+                            obj.sum = sum;
+                            obj.quarter = "Quý " + k;
+                            k++;
+                            sum = 0;
+                            arr.push(obj);
+                        }
+                    }
+                    return res.status(200).json({
+                        errCode: 0,
+                        msg: 'Lấy thống kê sản phẩm sản xuất theo tháng thành công!',
+                        data: arr
+                    })
+                }
+                return res.status(200).json({
+                    errCode: 0,
+                    msg: 'Lấy thống kê sản phẩm sản xuất theo tháng thành công!',
+                    data: result
+                })
+            }
+            
+        }catch(err){
+            console.log(err);
+            return res.status(500).json("Lỗi server!");
+        }
+    } 
 
     
 }

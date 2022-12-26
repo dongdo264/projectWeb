@@ -83,14 +83,13 @@ class userController {
     async getInfoProductById(req, res) {
         try {
             const id = req.params.id;
-            let data = await db.Productdetail.findOne({
+            let data = await db.Product.findOne({
                 where: {
                     productCode: id
                 },
                 include: [
                     {
-                        model: db.Product,
-                        attributes: ['productName', 'productLine', 'avatar']
+                        model: db.Productdetail,
                     }
                 ]
             })
