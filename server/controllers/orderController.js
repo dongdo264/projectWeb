@@ -105,7 +105,7 @@ class orderController {
                 status: 'Hoàn tất'
             }, {
                 where: {
-                    orderNumber
+                    orderNumber: orderNumber
                 }
             })
             return res.status(200).json({

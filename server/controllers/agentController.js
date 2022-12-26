@@ -86,7 +86,7 @@ class agentController {
                 agentCode,
                 customerName: customer.customerName,
                 dob: customer.dob,
-                adress: customer.adress,
+                address: customer.address,
                 phone: customer.phone,
                 email: customer.email,
                 avatar: customer.avatar
@@ -176,7 +176,16 @@ class agentController {
                 where : {
                     agentCode
                 },
-                raw: true
+                include: [
+                    {
+                        model: db.CustomerProduct,
+                        attributes: [
+                            [sequelize.fn('count', sequelize.col('customer_products.customerCode')), 'count'],
+                        ]
+                    }
+                ],
+                group: ['customers.customerCode']
+                
             })
             return res.status(200).json({
                 errCode: 0,
@@ -193,16 +202,42 @@ class agentController {
     async getProductsAreSold(req, res) {
         try{
             const agentCode = req.user.id;
+            const customer = await db.Customer.findAll({
+                attributes: ['customerCode'],
+                where: {
+                    agentCode
+                },
+                raw: true
+            })
+            let arr = [];
+            for (let i in customer) {
+                arr.push(customer[i].customerCode);
+            }
             let data = await db.CustomerProduct.findAll({
                 //raw: true,
+                where: {
+                    customerCode: {
+                        [sequelize.Op.in]: arr
+                    }
+                },
                 include: [
                     {
                         model: db.AgentWarehouse,
                         attributes: [
                             ['productCode', 'productCode'],['color', 'color']
                         ]
-                    }
-                ]
+                    },
+                    {
+                        model: db.Customer,
+                        attributes: [
+                            'customerName', 'phone'
+                        ]
+                    },
+                    
+                ],
+                order: [
+                    ['dateOfPurchase', 'DESC'],   
+                ],
             })
             return res.status(200).json({
                 errCode: 0,
@@ -245,8 +280,109 @@ class agentController {
                 msg: 'Gửi yêu cầu bảo hành thành công!'
             })
         }catch(err) {
-            consosle.log(err);
+            console.log(err);
             return res.status(500).json("Lỗi server!!");
+        }
+    }
+
+    //Lấy các hoạt động bảo hành
+    async getAllWarrantyClaim(req, res) {
+        try {
+            const agentCode = req.user.id;
+            let data = await db.Warranty.findAll({
+                where: {
+                    agentCode
+                },
+                order: [
+                    ['createAt', 'DESC'],   
+                ],
+            })
+            return res.status(200).json({
+                errCode: 0, 
+                msg: 'Lấy hoạt động bảo hành thành công!',
+                data
+            })
+        }catch(err) {
+            console.log(err);
+            return res.status(500).json("Lỗi server!");
+        }
+    }
+
+    //Triệu hồi
+    async updateStatusProduct(req, res) {
+        try {
+            const productCode = req.params.productCode;
+            const status = req.body.status;
+            const id = req.user.id;
+            
+            if (req.user.role === 10) {
+                const batchCode = await db.AgentWarehouse.findAll({
+                    where: {
+                        productCode
+                    },
+                    attributes: [
+                        'batchCode'
+                    ],
+                    raw: true
+                })
+                for (let i in batchCode) {
+                    await db.CustomerProduct.update({
+                        status
+                    }, {
+                        where: {
+                            batchCode: batchCode[i].batchCode,
+                            status: "Active"
+                        }
+                    })
+                }
+            } else if (req.user.role === 3) {
+                const warehouse = await db.AgentWarehouse.findAll({
+                    where: {
+                        agentCode: id,
+                        productCode
+                    },
+                    group: ['batchCode'],
+                    raw: true
+                })
+                for (let i in warehouse) {
+                    await db.CustomerProduct.update({
+                        status
+                    }, {
+                        where: {
+                            batchCode: warehouse[i].batchCode,
+                            status: "Active"
+                        }
+                    })
+                }
+            }
+            return res.status(200).json({
+                errCode: 0,
+                msg: 'Update successfully'
+            })
+        }catch(err) {
+            console.log(err);
+            return res.status(500).json("Lỗi server!")
+        }
+    }
+    
+    //Cập nhật trạng thái sản phẩm
+    async updateCustomerProduct(req, res) {
+        try{
+            const model = req.params.model;
+            await db.CustomerProduct.update({
+                status: req.body.status
+            }, {
+                where: {
+                    model
+                }
+            })
+            return res.status(200).json({
+                errCode: 0,
+                msg: 'Update successfully!'
+            })
+        }catch(err) {
+            console.log(err);
+            return res.status(500).json("Lỗi server!");
         }
     }
    

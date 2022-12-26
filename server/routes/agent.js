@@ -8,6 +8,9 @@ router.post('/createcustomer', agentController.createNewCustomer);
 router.post('/sellproducts', agentController.sellProducts);
 router.get("/customers", agentController.getAllCustomers);
 router.get("/productsaresold", agentController.getProductsAreSold)
-router.post("/sendwarrantyclaim", agentController.sendWarrantyClaim)
+router.post("/sendwarrantyclaim", agentController.sendWarrantyClaim);
+router.get("/warranties", agentController.getAllWarrantyClaim)
+router.put("/product/:productCode", agentController.updateStatusProduct);
+router.put("/customerproduct/:model", agentController.updateCustomerProduct)
 
 module.exports = router;

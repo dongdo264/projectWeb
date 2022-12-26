@@ -1,5 +1,5 @@
 module.exports = (db) => {
-  const {DataTypes } = require('sequelize');
+  const {DataTypes, NOW } = require('sequelize');
   const Customer = db.define('customers', {
     
     // Model attributes are defined here
@@ -22,7 +22,7 @@ module.exports = (db) => {
       allowNull: false,
       defaultValue: 'N/A'
     },
-    adress: {
+    address: {
       type: DataTypes.STRING,
       allowNull: false
     },
@@ -42,6 +42,11 @@ module.exports = (db) => {
     avatar: {
       type: DataTypes.BLOB('long'),
     },
+    createAt: {
+      type: DataTypes.DATEONLY,
+        allowNull: false,
+        defaultValue: NOW
+    }
   }, {
       timestamps: false
   });
