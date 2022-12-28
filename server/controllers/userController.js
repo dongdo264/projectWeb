@@ -1,9 +1,10 @@
 const db = require('../models/index');
 const sequelize = require('sequelize');
 class userController {
+    //Lấy thông tin người dùng theo id
     async getProfileUserById(req, res) {
         try {
-            const id = req.query.id;
+            const id = req.params.id;
             if (!id) {
                 return res.status(200).json({
                     errCode: 2,
@@ -25,7 +26,7 @@ class userController {
                         attributes: [
                             ['agentCode', 'id'],
                             ['agentName', 'name'],
-                            ['agentAdress', 'adress'],
+                            ['agentAdress', 'address'],
                             ['agentCity', 'city'],
                             ['agentPhone', 'phone'],
                             'avatar',
@@ -41,7 +42,7 @@ class userController {
                         attributes: [
                             ['wcCode', 'id'],
                             ['wcName', 'name'],
-                            ['wcAdress', 'adress'],
+                            ['wcAdress', 'address'],
                             ['wcCity', 'city'],
                             ['wcPhone', 'phone'],
                             'avatar',
@@ -57,7 +58,7 @@ class userController {
                         attributes: [
                             ['factoryCode', 'id'],
                             ['factoryName', 'name'],
-                            ['factoryAdress', 'adress'],
+                            ['factoryAdress', 'address'],
                             ['factoryCity', 'city'],
                             ['factoryPhone', 'phone'],
                             'avatar',
@@ -80,6 +81,64 @@ class userController {
             })
         }
     }
+
+    //Cập nhật thông tin người dùng
+    async updateUser(req, res) {
+        try {
+            const id = req.params.id;
+            const role = req.user.role;
+            const data = req.body.data;
+            if (role === 1) {
+                await db.Factory.update({
+                    factoryName: data.name,
+                    factoryAdress: data.address,
+                    factoryCity: data.city,
+                    factoryPhone: data.phone,
+                    email: data.email,
+                    avatar: req.body.avatar
+                }, {
+                    where: {
+                        factoryCode: id
+                    }
+                })
+            } else if (role === 2) {
+                await db.WarrantyCenter.update({
+                    wcName: data.name,
+                    wcAdress: data.address,
+                    wcCity: data.city,
+                    wcPhone: data.phone,
+                    email: data.email,
+                    avatar: req.body.avatar
+                }, {
+                    where: {
+                        wcCode: id
+                    }
+                })
+            } else if (role === 3) {
+                await db.DistributionAgent.update({
+                    agentName: data.name,
+                    agentAdress: data.address,
+                    agentCity: data.city,
+                    agentPhone: data.phone,
+                    email: data.email,
+                    avatar: req.body.avatar
+                }, {
+                    where: {
+                        agentCode: id
+                    }
+                })
+            }
+            return res.status(200).json({
+                errCode: 0,
+                msg: 'Cập nhật thông tin thành công!'
+            })
+        }catch(err) {
+            console.log(err);
+            return res.status(500).json("Lỗi server!");
+        }
+    }
+
+    //Lấy thông tin sản phẩm theo id
     async getInfoProductById(req, res) {
         try {
             const id = req.params.id;
@@ -233,7 +292,20 @@ class userController {
         async getAllProductLines(req, res) {
             try{
                 let data = await db.ProductLine.findAll({
-                    raw: true
+                    attributes: [
+                        '*'   
+                    ],
+                    include: [
+                        {
+                        model: db.Product,
+                        attributes: [
+                            [sequelize.fn('count', sequelize.col('products.productCode')), 'count'],
+                        ],
+                        
+                        }
+                    ],
+                    raw: true,
+                    group: ['productlines.productLine']
                 })
                 return res.status(200).json({
                     errCode: 0,
