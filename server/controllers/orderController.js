@@ -1,10 +1,46 @@
 const db = require('../models/index');
 const sequelize = require('sequelize');
 class orderController {
+
+    //Tạo đơn hàng mới
+    async order(req, res) {
+        try {
+            const agentCode = req.user.id;
+            const data = req.body.data;
+            const factoryCode = req.body.factoryCode;
+            const orderNumber = Date.now() % 100000000;
+            await db.Order.sequelize.query("SET FOREIGN_KEY_CHECKS = 0", null);
+            await db.Order.create({
+                orderNumber,
+                agentCode,
+                factoryCode,
+                status: 'Pending'
+            })
+            for (let index = 0; index < data.length; index++) {
+                await db.OrderDetail.create({
+                    orderNumber,
+                    productCode: data[index].productCode,
+                    quantity: data[index].quantity,
+                    color: data[index].color
+                })
+            }
+            await db.Order.sequelize.query("SET FOREIGN_KEY_CHECKS = 1", null);
+            return res.status(200).json({
+                errCode: 0,
+                msg: 'Order successfully!'
+            })
+        } catch(err) {
+            console.log(err);
+            return res.status(500).json({
+                errCode: 1,
+                msg: "Lỗi server"
+            })
+        }
+    }
     //Lấy thông tin đơn hàng
     async getInfoOrder (req, res) {
         try {
-            const orderNumber = req.query.orderNumber;
+            const orderNumber = req.params.id;
             let data = await db.Order.findOne({
                 where: {
                     orderNumber

@@ -2,15 +2,17 @@ var express = require('express');
 var router = express.Router();
 let agentController = require("../controllers/agentController");
 
-router.post('/order', agentController.order)
+//Xem kho của đại lý
 router.get('/warehouse', agentController.warehouse);
-router.post('/createcustomer', agentController.createNewCustomer);
+//Bán sản phẩm
 router.post('/sellproducts', agentController.sellProducts);
-router.get("/customers", agentController.getAllCustomers);
-router.get("/productsaresold", agentController.getProductsAreSold)
+//Lấy sản phẩm đã bán
+router.get("/productsaresold", agentController.getProductsAreSold);
+//Gửi yêu cầu bảo hành
 router.post("/sendwarrantyclaim", agentController.sendWarrantyClaim);
-router.get("/warranties", agentController.getAllWarrantyClaim)
-router.put("/product/:productCode", agentController.updateStatusProduct);
+//Lấy yêu cầu bảo hành
+router.get("/warrantyclaim", agentController.getAllWarrantyClaim)
+//Cập nhật sản phẩm của khách hàng
 router.put("/customerproduct/:model", agentController.updateCustomerProduct)
 
 module.exports = router;

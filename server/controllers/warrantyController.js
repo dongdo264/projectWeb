@@ -108,6 +108,9 @@ class customerController {
             const type = req.query.type;
             const d = new Date();
             const year = d.getFullYear();
+            let finished = "Hoàn tất";
+            let working = "Đang sửa chữa";
+            let faulty = "Sản phẩm lỗi";
             if (type === "month" || type === "quarter") {
                 let data = await db.Warranty.findAll({
                     where: {
@@ -124,11 +127,8 @@ class customerController {
                       group: ["month", "status"],
                       raw: true
                 })
-                console.log(data);
                 let result = [];
-                let finished = "Hoàn tất";
-                let working = "Đang sửa chữa"
-                let faulty = "Sản phẩm lỗi"
+                
                 for (let i = 1; i <= 12; i++) {
                     let obj = {};
                     obj.month = i;
@@ -185,6 +185,50 @@ class customerController {
                 return res.status(200).json({
                     errCode: 0,
                     msg: 'Lấy thống kê sản phẩm bảo hành theo tháng thành công!',
+                    data: result
+                })
+            }
+            else if (type === 'year') {
+                let data = await db.Warranty.findAll({
+                    where: {
+                        wcCode
+                      },
+                      attributes: [
+                        'status',
+                        [sequelize.fn("YEAR", sequelize.col("createAt")), "year"],
+                        [sequelize.fn('COUNT', sequelize.col('warrantyCode')), 'count']
+                      ],
+                      group: ["year", "status"],
+                      raw: true
+                })
+                let result = [];
+                for (let i = year - 3; i <= year; i++) {
+                    let obj = {};
+                    obj.year = i;
+                    obj.finished = 0;
+                    obj.working = 0;
+                    obj.faulty = 0;
+                    for (let j in data) {
+                        if (data[j].year === i) { 
+                            if (data[j].status === finished) {
+                                obj.finished += parseInt(data[j].count);
+                            } else if (data[j].status === working) {
+                                obj.working += parseInt(data[j].count);
+                            } else if (data[j].status === faulty) {
+                                obj.faulty += parseInt(data[j].count)
+                            }
+                        }
+                    }
+                    obj.year = "Năm " + i;
+                    result.push(obj);
+                    // obj = {};
+                    // obj.finished = 0;
+                    // obj.working = 0;
+                    // obj.faulty = 0;
+                }
+                return res.status(200).json({
+                    errCode: 0,
+                    msg: 'Lấy thống kê sản phẩm bảo hành theo năm thành công!',
                     data: result
                 })
             }

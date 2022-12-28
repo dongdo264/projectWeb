@@ -2,7 +2,7 @@ const db = require('../models/index');
 const sequelize = require('sequelize');
 class agentController {
 
-    //LẤY TẤT CẢ ĐẠI LÝ
+    //Lấy tất cả đơn hàng
     async order(req, res) {
         try {
             const agentCode = req.user.id;
@@ -75,32 +75,7 @@ class agentController {
         }
     }
 
-    //Tạo mới khách hàng
-    async createNewCustomer(req, res) {
-        try{
-            const customer = req.body.customer;
-            const agentCode = req.user.id;
-
-            await db.Customer.create({
-                customerCode: customer.customerCode,
-                agentCode,
-                customerName: customer.customerName,
-                dob: customer.dob,
-                address: customer.address,
-                phone: customer.phone,
-                email: customer.email,
-                avatar: customer.avatar
-
-            })
-            return res.status(200).json({
-                errCode: 0,
-                msg: 'Create customer successfully!'
-            })
-        }catch(err) {
-            console.log(err);
-            return res.status(500).json("Lỗi server!");
-        }
-    }
+    
 
     //Bán sản phẩm cho khách hàng
     async sellProducts(req, res) {
@@ -143,7 +118,6 @@ class agentController {
                             }
                         })
                         k += 1;
-                        
                         instock = warehouse[k].quantityImported - warehouse[k].quantitySold;
                     }
                 }
@@ -168,35 +142,7 @@ class agentController {
         }
     }
 
-    //Lấy tất cả khách hàng
-    async getAllCustomers(req, res) {
-        try{
-            const agentCode = req.user.id;
-            let data = await db.Customer.findAll({
-                where : {
-                    agentCode
-                },
-                include: [
-                    {
-                        model: db.CustomerProduct,
-                        attributes: [
-                            [sequelize.fn('count', sequelize.col('customer_products.customerCode')), 'count'],
-                        ]
-                    }
-                ],
-                group: ['customers.customerCode']
-                
-            })
-            return res.status(200).json({
-                errCode: 0,
-                msg: 'Lấy danh sách khách hàng thành công!',
-                data
-            })
-        }catch(err) {
-            console.log(err);
-            return res.status(500).json("Lỗi server!");
-        }
-    }
+    
 
     //Lấy sản phẩm đã bán
     async getProductsAreSold(req, res) {

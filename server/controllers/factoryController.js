@@ -1,56 +1,7 @@
 const db = require('../models/index');
 const sequelize = require('sequelize');
 class FactoryController {
-    //Thêm mới sản phẩm
-    async createproduct(req, res) {
-        try {
-            let id = req.body.id;
-            let product = req.body.product;
-            let productdetail = req.body.productdetail
-            let avatar = req.body.avatar;
-            if (!product || !productdetail) {
-                return res.status(200).json({
-                    errCode: 2,
-                    msg: "missing body !"
-                })
-            } else {
-                await db.ProductLine.sequelize.query("SET FOREIGN_KEY_CHECKS = 0", null);
-                await db.Product.create({
-                    productCode: id,
-                    productLine: product.productLine,
-                    productName: product.productName,
-                    buyPrice: product.productPrice,
-                    productStatus: product.status,
-                    warrantyPeriod: product.warrantyPeriod,
-                    avatar
-                });
-                await db.Productdetail.create({
-                    productCode: id,
-                    size: productdetail.size,
-                    frame: productdetail.frame,
-                    shock: productdetail.shock,
-                    rims: productdetail.rims,
-                    tires: productdetail.tires,
-                    handlebar: productdetail.handlebar,
-                    saddle: productdetail.saddle,
-                    pedals: productdetail.pedals,
-                    brakes: productdetail.brakes,
-                    weight: productdetail.weight
-                })
-                await db.ProductLine.sequelize.query("SET FOREIGN_KEY_CHECKS = 1", null);
-                return res.status(200).json({
-                    errCode: 0,
-                    msg: 'Tạo sản phẩm thành công!'
-                })  
-            }
-        }catch(err) {
-            console.log(err);
-            return res.status(500).json({
-                errCode: 1,
-                msg: 'Lỗi server'
-            })
-        }
-    }
+    
 
     //Lấy thông tin các sản phẩm
     async getAllProducts(req, res) {
@@ -235,6 +186,7 @@ class FactoryController {
                     let check = true;
                     for (let j in data) {
                         if (data[j].month === i) { 
+                            data[j].month = "Tháng " + i;
                             result.push(data[j]);
                             check = false;
                             break;
@@ -272,6 +224,40 @@ class FactoryController {
                     errCode: 0,
                     msg: 'Lấy thống kê sản phẩm sản xuất theo tháng thành công!',
                     data: result
+                })
+            } else if (type === 'year') {
+                let data = await db.Production.findAll({
+                    where: { 
+                        factoryCode
+                      },
+                      attributes: [
+                        [sequelize.fn("YEAR", sequelize.col("MFG")), "year"],
+                        [sequelize.fn('SUM', sequelize.col('quantityProduced')), 'sum']
+                      ],
+                      group: ["year"],
+                      raw: true
+                })
+                let arr = [];
+                for (let i = year - 3; i <= year; i++) {
+                    let check = true
+                    for (let j in data) {
+                        if (data[j].year === i) {
+                            data[j].year = "Năm " + i;
+                            arr.push(data[j]);
+                            check = false;
+                            break;
+                        }
+                    }
+                    if (check) {
+                        let obj = {};
+                        obj.year = "Năm " + i;
+                        obj.sum = "0";
+                        arr.push(obj);
+                    }
+                }
+                return res.status(200).json({
+                    errCode: 0,
+                    data: arr
                 })
             }
             
