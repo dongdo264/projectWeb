@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 let factoryController = require("../controllers/factoryController");
-const validate = require('../middleware/validate')
 
 //Nhà máy sản xuất sản phẩm
 router.post("/production", factoryController.production)
