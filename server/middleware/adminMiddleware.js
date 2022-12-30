@@ -29,31 +29,71 @@ module.exports = {
         }
     },
     //Kiểm tra tạo user mới
-    createNewProduct: async (req, res, next) => {
+    createNewUser: async (req, res, next) => {
         try {
-
             let id = req.body.id;
             let username = req.body.username;
             let password = req.body.password;
             let name = req.body.name;
-            let address = req.body.address;
+            let address = req.body.adress;
             let city = req.body.city;
             let phone = req.body.phone;
             let option = req.body.option;
             if (!id || !username || !password || !name || !address || !city ||  !phone || !option ) {
+                console.log("Missing")
                 return res.json("Missing params");
             }
-            let check = await db.Account.findOne({
-                where: {
-                    id
+            
+            while(true) {
+                let check = await db.Account.findOne({
+                    where: {
+                        id
+                    }
+                })
+                if (check) {
+                    id = Math.floor(Math.random() * 1000000000);
+                } else {
+                    break;
                 }
-            })
-            if (check) {
-                id = Math.floor(Math.random() * 10000000000);
-            }
+            } 
+            
             req.body.id = id;
             next();
         }catch(err) {
+            return res.status(500).json("Lỗi server!")
+        }
+    },
+
+    //Kiểm tra thêm mới người dùng
+    createNewProduct: async(req, res, next) => {
+        try {
+            let id = req.body.id;
+            let product = req.body.product;
+            let productdetail = req.body.productdetail
+            let avatar = req.body.avatar;
+            if (!id || !product || !productdetail || !avatar) {
+                return res.status(400).json({
+                    errCode: 1,
+                    msg: "Missing params"
+                })
+            }
+            while(true) {
+                let check = await db.Product.findOne({
+                    where: {
+                        productCode: id
+                    }
+                })
+                if (check) {
+                    id = Math.floor(Math.random() * 1000000000);
+                } else {
+                    break;
+                }
+            }
+            req.body.id = id;
+            next();
+
+        }catch(err) {
+            console.log(err);
             return res.status(500).json("Lỗi server!")
         }
     }

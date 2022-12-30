@@ -1,9 +1,9 @@
-const authRouter = require("./auth");
-const adminRouter = require("./admin");
-const userRouter = require("./user");
-const factoryRoutes = require("./factory");
+const authRouter = require("./auth.route");
+const adminRouter = require("./admin.route");
+const userRouter = require("./user.route");
+const factoryRoutes = require("./factory.route");
 const warrantyRoutes = require("./warranty.route")
-const agentRoutes = require("./agent");
+const agentRoutes = require("./agent.route");
 const orderRoutes = require("./order.route")
 const customerRoutes = require("./customer.route")
 const { verifyTokenAndAdmin,

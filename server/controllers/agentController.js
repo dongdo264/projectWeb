@@ -316,7 +316,7 @@ class agentController {
     //Triệu hồi
     async updateStatusProduct(req, res) {
         try {
-            const productCode = req.params.productCode;
+            const productCode = req.params.id;
             const status = req.body.status;
             const id = req.user.id;
             
@@ -438,77 +438,309 @@ class agentController {
             const type = req.query.type;
             const d = new Date();
             const year = d.getFullYear();
-            if (type === "month" || type === "quarter") {
-                let data = await db.AgentWarehouse.findAll({
-                    where: {
-                        createdAt: sequelize.where(
-                          sequelize.fn("YEAR", sequelize.col("createAt")),
-                          year),
-                        agentCode
-                      },
-                      attributes: [
-                        [sequelize.fn("MONTH", sequelize.col("createAt")), "month"],
-                        [sequelize.fn('SUM', sequelize.col('quantityImported')), 'sum']
-                      ],
-                      group: ["month"],
-                      raw: true
-                })
-                console.log(data);
-                const customer = await db.Customer.findAll({
-                    attributes: ['customerCode'],
-                    where: {
-                        agentCode
-                    },
-                    raw: true
-                })
-                let arr = [];
-                for (let i in customer) {
-                    arr.push(customer[i].customerCode);
-                }
-                let dataSold = await db.CustomerProduct.findAll({
-                    where: {
-                        customerCode: {
-                            [sequelize.Op.in]: arr
+            if (req.user.role === 3) {
+                if (type === "month" || type === "quarter") {
+                    let data = await db.AgentWarehouse.findAll({
+                        where: {
+                            createdAt: sequelize.where(
+                            sequelize.fn("YEAR", sequelize.col("createAt")),
+                            year),
+                            agentCode
                         },
-                        dateOfPurchase: sequelize.where(
-                          sequelize.fn("YEAR", sequelize.col("dateOfPurchase")),
-                          year)
-                      },
-                      attributes: [
-                        [sequelize.fn("MONTH", sequelize.col("dateOfPurchase")), "month"],
-                        [sequelize.fn('count', sequelize.col('model')), 'sum']
-                      ],
-                      group: ["month"],
-                      raw: true
-                })
-                console.log(dataSold);
-                let result = [];
-                for (let i = 1; i <= 12; i++) {
-                    
-                    let obj = {};
-                    obj.month = i;
-                    obj.sold = 0;
-                    obj.imported = 0;
-                    for (let j in data) {
-                        if (data[j].month === i) { 
-                            obj.imported += parseInt(data[j].sum);
-                        }
-                    }
-                    for (let j in dataSold) {
-                        if (dataSold[j].month === i) { 
-                            obj.sold += parseInt(dataSold[j].sum);
-                        }
-                    }
-                    
-                    obj.month = "Tháng " + i;
-                    result.push(obj);
-                    }
-                    return res.status(200).json({
-                        errCode: 0,
-                        msg: 'Lấy thống kê sản phẩm sản xuất theo tháng thành công!',
-                        data: result
+                        attributes: [
+                            [sequelize.fn("MONTH", sequelize.col("createAt")), "month"],
+                            [sequelize.fn('SUM', sequelize.col('quantityImported')), 'sum']
+                        ],
+                        group: ["month"],
+                        raw: true
                     })
-                }
+              
+                    const customer = await db.Customer.findAll({
+                        attributes: ['customerCode'],
+                        where: {
+                            agentCode
+                        },
+                        raw: true
+                    })
+                    let arr = [];
+                    for (let i in customer) {
+                        arr.push(customer[i].customerCode);
+                    }
+                    let dataSold = await db.CustomerProduct.findAll({
+                        where: {
+                            customerCode: {
+                                [sequelize.Op.in]: arr
+                            },
+                            dateOfPurchase: sequelize.where(
+                            sequelize.fn("YEAR", sequelize.col("dateOfPurchase")),
+                            year)
+                        },
+                        attributes: [
+                            [sequelize.fn("MONTH", sequelize.col("dateOfPurchase")), "month"],
+                            [sequelize.fn('count', sequelize.col('model')), 'sum']
+                        ],
+                        group: ["month"],
+                        raw: true
+                    })
+                 
+                    let result = [];
+                    for (let i = 1; i <= 12; i++) {
+                        
+                        let obj = {};
+                        obj.month = i;
+                        obj.sold = 0;
+                        obj.imported = 0;
+                        for (let j in data) {
+                            if (data[j].month === i) { 
+                                obj.imported += parseInt(data[j].sum);
+                            }
+                        }
+                        for (let j in dataSold) {
+                            if (dataSold[j].month === i) { 
+                                obj.sold += parseInt(dataSold[j].sum);
+                            }
+                        }
+                        
+                            obj.month = "Tháng " + i;
+                            result.push(obj);
+                        }
+                        // console.log(result);
+
+                        let arr_ = [];
+                        let k = 1;
+                        let sold = 0;
+                        let imported = 0;
+                        for (let i = 0; i < 12; i++) {
+                            sold += parseInt(result[i].sold);
+                            imported += parseInt(result[i].imported);
+                            if (i === 2 || i === 5 || i === 8 || i === 11) {
+                                let obj_ = {};
+                                obj_.quarter = "Quý " + k;
+                                obj_.sold = sold;
+                                obj_.imported = imported;
+                                k++;
+                                arr_.push(obj_);
+                                sold = 0;
+                                imported = 0;
+                            }
+                        }
+                 
+                        if (type === "month") {
+                            return res.status(200).json({
+                                errCode: 0,
+                                msg: 'Lấy thống kê sản phẩm sản xuất theo tháng thành công!',
+                                data: result
+                            })
+                        } else if (type === "quarter") {
+                            return res.status(200).json({
+                                errCode: 0,
+                                msg: 'Lấy thống kê sản phẩm sản xuất theo tháng thành công!',
+                                data: arr_
+                            })
+                        }
+                    } else if (type === 'year') {
+                        let data = await db.AgentWarehouse.findAll({
+                            where: {
+                                agentCode
+                            },
+                            attributes: [
+                                [sequelize.fn("YEAR", sequelize.col("createAt")), "year"],
+                                [sequelize.fn('SUM', sequelize.col('quantityImported')), 'sum']
+                            ],
+                            group: ["year"],
+                            raw: true
+                        })
+                       
+                        const customer = await db.Customer.findAll({
+                            attributes: ['customerCode'],
+                            where: {
+                                agentCode
+                            },
+                            raw: true
+                        })
+                        let arrID = [];
+                        for (let i in customer) {
+                            arrID.push(customer[i].customerCode);
+                        }
+                        let dataSold = await db.CustomerProduct.findAll({
+                            where: {
+                                customerCode: {
+                                    [sequelize.Op.in]: arrID
+                                },
+                            },
+                            attributes: [
+                                [sequelize.fn("Year", sequelize.col("dateOfPurchase")), "year"],
+                                [sequelize.fn('count', sequelize.col('model')), 'sum']
+                            ],
+                            group: ["year"],
+                            raw: true
+                        })
+                        let arr = [];
+                        for (let i = year - 3; i <= year; i++) {
+                            let obj = {};
+                            let sold = 0;
+                            let imported = 0;
+                            for (let j in data) {
+                                if (data[j].year === i) {
+                                    imported = parseInt(data[j].sum);
+                                }
+                            }
+                            for (let j in dataSold) {
+                                if (dataSold[j].year === i) {
+                                    sold =parseInt(dataSold[j].sum);
+                                }
+                            }
+                        
+                            let obj_ = {};
+                            obj_.year = "Năm " + i;
+                            obj_.sold = sold;
+                            obj_.imported = imported;
+                            arr.push(obj_);
+                        }
+                        return res.status(200).json({
+                            errCode: 0,
+                            data: arr
+                        })
+                    }
+            } else if (req.user.role === 10) {
+                if (type === "month" || type === "quarter") {
+                    let data = await db.AgentWarehouse.findAll({
+                        where: {
+                            createdAt: sequelize.where(
+                            sequelize.fn("YEAR", sequelize.col("createAt")),
+                            year),
+                        },
+                        attributes: [
+                            [sequelize.fn("MONTH", sequelize.col("createAt")), "month"],
+                            [sequelize.fn('SUM', sequelize.col('quantityImported')), 'sum']
+                        ],
+                        group: ["month"],
+                        raw: true
+                    })
+                    // const customer = await db.Customer.findAll({
+                    //     attributes: ['customerCode'],
+                    //     where: {
+                    //         agentCode
+                    //     },
+                    //     raw: true
+                    // })
+                    // let arr = [];
+                    // for (let i in customer) {
+                    //     arr.push(customer[i].customerCode);
+                    // }
+                    let dataSold = await db.CustomerProduct.findAll({
+                        where: {
+                            dateOfPurchase: sequelize.where(
+                            sequelize.fn("YEAR", sequelize.col("dateOfPurchase")),
+                            year)
+                        },
+                        attributes: [
+                            [sequelize.fn("MONTH", sequelize.col("dateOfPurchase")), "month"],
+                            [sequelize.fn('count', sequelize.col('model')), 'sum']
+                        ],
+                        group: ["month"],
+                        raw: true
+                    })
+                 
+                    let result = [];
+                    for (let i = 1; i <= 12; i++) {
+                        let obj = {};
+                        obj.month = i;
+                        obj.sold = 0;
+                        obj.imported = 0;
+                        for (let j in data) {
+                            if (data[j].month === i) { 
+                                obj.imported += parseInt(data[j].sum);
+                            }
+                        }
+                        for (let j in dataSold) {
+                            if (dataSold[j].month === i) { 
+                                obj.sold += parseInt(dataSold[j].sum);
+                            }
+                        }
+                        
+                            obj.month = "Tháng " + i;
+                            result.push(obj);
+                        }
+                        // console.log(result);
+
+                        let arr_ = [];
+                        let k = 1;
+                        let sold = 0;
+                        let imported = 0;
+                        for (let i = 0; i < 12; i++) {
+                            sold += parseInt(result[i].sold);
+                            imported += parseInt(result[i].imported);
+                            if (i === 2 || i === 5 || i === 8 || i === 11) {
+                                let obj_ = {};
+                                obj_.quarter = "Quý " + k;
+                                obj_.sold = sold;
+                                obj_.imported = imported;
+                                k++;
+                                arr_.push(obj_);
+                                sold = 0;
+                                imported = 0;
+                            }
+                        }
+                
+                        if (type === "month") {
+                            return res.status(200).json({
+                                errCode: 0,
+                                msg: 'Lấy thống kê sản phẩm sản xuất theo tháng thành công!',
+                                data: result
+                            })
+                        } else if (type === "quarter") {
+                            return res.status(200).json({
+                                errCode: 0,
+                                msg: 'Lấy thống kê sản phẩm sản xuất theo tháng thành công!',
+                                data: arr_
+                            })
+                        }
+                    } else if (type === 'year') {
+                        let data = await db.AgentWarehouse.findAll({
+                            attributes: [
+                                [sequelize.fn("YEAR", sequelize.col("createAt")), "year"],
+                                [sequelize.fn('SUM', sequelize.col('quantityImported')), 'sum']
+                            ],
+                            group: ["year"],
+                            raw: true
+                        })
+                 
+                        let dataSold = await db.CustomerProduct.findAll({
+                            attributes: [
+                                [sequelize.fn("Year", sequelize.col("dateOfPurchase")), "year"],
+                                [sequelize.fn('count', sequelize.col('model')), 'sum']
+                            ],
+                            group: ["year"],
+                            raw: true
+                        })
+                        let arr = [];
+                        for (let i = year - 3; i <= year; i++) {
+                            let sold = 0;
+                            let imported = 0;
+                            for (let j in data) {
+                                if (data[j].year === i) {
+                                    imported = parseInt(data[j].sum);
+                                }
+                            }
+                            for (let j in dataSold) {
+                                if (dataSold[j].year === i) {
+                                    sold =parseInt(dataSold[j].sum);
+                                }
+                            }
+                        
+                            let obj_ = {};
+                            obj_.year = "Năm " + i;
+                            obj_.sold = sold;
+                            obj_.imported = imported;
+                            arr.push(obj_);
+                        }
+                        return res.status(200).json({
+                            errCode: 0,
+                            data: arr
+                        })
+                    }
+            }
                 
         }catch(err) {
             console.log(err);

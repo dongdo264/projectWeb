@@ -85,7 +85,7 @@ class customerController {
                 raw: true
             })
             await db.FaultyProduct.create({
-                errCode: Math.floor(Math.random() * 10000000000),
+                errCode: Math.floor(Math.random() * 10000000),
                 productCode,
                 factoryCode: factory.factoryCode,
                 wcCode: req.user.id,
@@ -129,126 +129,243 @@ class customerController {
             let finished = "Hoàn tất";
             let working = "Đang sửa chữa";
             let faulty = "Sản phẩm lỗi";
-            if (type === "month" || type === "quarter") {
-                let data = await db.Warranty.findAll({
-                    where: {
-                        createdAt: sequelize.where(
-                          sequelize.fn("YEAR", sequelize.col("createAt")),
-                          year),
-                        wcCode
-                      },
-                      attributes: [
-                        'status',
-                        [sequelize.fn("MONTH", sequelize.col("createAt")), "month"],
-                        [sequelize.fn('COUNT', sequelize.col('warrantyCode')), 'count']
-                      ],
-                      group: ["month", "status"],
-                      raw: true
-                })
-                let result = [];
-                
-                for (let i = 1; i <= 12; i++) {
-                    let obj = {};
-                    obj.month = i;
-                    obj.finished = 0;
-                    obj.working = 0;
-                    obj.faulty = 0;
-                    for (let j in data) {
-                        if (data[j].month === i) { 
-                            if (data[j].status === finished) {
-                                obj.finished += parseInt(data[j].count);
-                            } else if (data[j].status === working) {
-                                obj.working += parseInt(data[j].count);
-                            } else if (data[j].status === faulty) {
-                                obj.faulty += parseInt(data[j].count)
+            if (req.user.role === 2) {
+                if (type === "month" || type === "quarter") {
+                    let data = await db.Warranty.findAll({
+                        where: {
+                            createdAt: sequelize.where(
+                            sequelize.fn("YEAR", sequelize.col("createAt")),
+                            year),
+                            wcCode
+                        },
+                        attributes: [
+                            'status',
+                            [sequelize.fn("MONTH", sequelize.col("createAt")), "month"],
+                            [sequelize.fn('COUNT', sequelize.col('warrantyCode')), 'count']
+                        ],
+                        group: ["month", "status"],
+                        raw: true
+                    })
+                    let result = [];
+                    
+                    for (let i = 1; i <= 12; i++) {
+                        let obj = {};
+                        obj.month = i;
+                        obj.finished = 0;
+                        obj.working = 0;
+                        obj.faulty = 0;
+                        for (let j in data) {
+                            if (data[j].month === i) { 
+                                if (data[j].status === finished) {
+                                    obj.finished += parseInt(data[j].count);
+                                } else if (data[j].status === working) {
+                                    obj.working += parseInt(data[j].count);
+                                } else if (data[j].status === faulty) {
+                                    obj.faulty += parseInt(data[j].count)
+                                }
                             }
                         }
+                        obj.month = "Tháng " + i;
+                        result.push(obj);
+                        obj = {};
+                        obj.finished = 0;
+                        obj.working = 0;
+                        obj.faulty = 0;
                     }
-                    obj.month = "Tháng " + i;
-                    result.push(obj);
-                    obj = {};
-                    obj.finished = 0;
-                    obj.working = 0;
-                    obj.faulty = 0;
-                }
-                if (type === 'quarter') {
-                    let arr = [];
-                    let finished = 0;
-                    let working = 0;
-                    let faulty = 0;
-                    let k = 1;
-                    for (let i = 0; i < 12; i++) {
-                        finished += parseInt(result[i].finished);
-                        working += parseInt(result[i].working);
-                        faulty += parseInt(result[i].faulty);
-                        if (i === 2 || i === 5 || i === 8 || i === 11) {
-                            let obj = {};
-                            obj.finished = finished;
-                            obj.working = working;
-                            obj.faulty = faulty;
-                            obj.quarter = "Quý " + k;
-                            k++;
-                            finished = 0;
-                            working = 0;
-                            faulty = 0;
-                            arr.push(obj);
+                    if (type === 'quarter') {
+                        let arr = [];
+                        let finished = 0;
+                        let working = 0;
+                        let faulty = 0;
+                        let k = 1;
+                        for (let i = 0; i < 12; i++) {
+                            finished += parseInt(result[i].finished);
+                            working += parseInt(result[i].working);
+                            faulty += parseInt(result[i].faulty);
+                            if (i === 2 || i === 5 || i === 8 || i === 11) {
+                                let obj = {};
+                                obj.finished = finished;
+                                obj.working = working;
+                                obj.faulty = faulty;
+                                obj.quarter = "Quý " + k;
+                                k++;
+                                finished = 0;
+                                working = 0;
+                                faulty = 0;
+                                arr.push(obj);
+                            }
                         }
+                        return res.status(200).json({
+                            errCode: 0,
+                            msg: 'Lấy thống kê sản phẩm bảo hành theo tháng thành công!',
+                            data: arr
+                        })
                     }
                     return res.status(200).json({
                         errCode: 0,
                         msg: 'Lấy thống kê sản phẩm bảo hành theo tháng thành công!',
-                        data: arr
+                        data: result
                     })
                 }
-                return res.status(200).json({
-                    errCode: 0,
-                    msg: 'Lấy thống kê sản phẩm bảo hành theo tháng thành công!',
-                    data: result
-                })
-            }
-            else if (type === 'year') {
-                let data = await db.Warranty.findAll({
-                    where: {
-                        wcCode
-                      },
-                      attributes: [
-                        'status',
-                        [sequelize.fn("YEAR", sequelize.col("createAt")), "year"],
-                        [sequelize.fn('COUNT', sequelize.col('warrantyCode')), 'count']
-                      ],
-                      group: ["year", "status"],
-                      raw: true
-                })
-                let result = [];
-                for (let i = year - 3; i <= year; i++) {
-                    let obj = {};
-                    obj.year = i;
-                    obj.finished = 0;
-                    obj.working = 0;
-                    obj.faulty = 0;
-                    for (let j in data) {
-                        if (data[j].year === i) { 
-                            if (data[j].status === finished) {
-                                obj.finished += parseInt(data[j].count);
-                            } else if (data[j].status === working) {
-                                obj.working += parseInt(data[j].count);
-                            } else if (data[j].status === faulty) {
-                                obj.faulty += parseInt(data[j].count)
+                else if (type === 'year') {
+                    let data = await db.Warranty.findAll({
+                        where: {
+                            wcCode
+                        },
+                        attributes: [
+                            'status',
+                            [sequelize.fn("YEAR", sequelize.col("createAt")), "year"],
+                            [sequelize.fn('COUNT', sequelize.col('warrantyCode')), 'count']
+                        ],
+                        group: ["year", "status"],
+                        raw: true
+                    })
+                    let result = [];
+                    for (let i = year - 3; i <= year; i++) {
+                        let obj = {};
+                        obj.year = i;
+                        obj.finished = 0;
+                        obj.working = 0;
+                        obj.faulty = 0;
+                        for (let j in data) {
+                            if (data[j].year === i) { 
+                                if (data[j].status === finished) {
+                                    obj.finished += parseInt(data[j].count);
+                                } else if (data[j].status === working) {
+                                    obj.working += parseInt(data[j].count);
+                                } else if (data[j].status === faulty) {
+                                    obj.faulty += parseInt(data[j].count)
+                                }
                             }
                         }
+                        obj.year = "Năm " + i;
+                        result.push(obj);
+                        // obj = {};
+                        // obj.finished = 0;
+                        // obj.working = 0;
+                        // obj.faulty = 0;
                     }
-                    obj.year = "Năm " + i;
-                    result.push(obj);
-                    // obj = {};
-                    // obj.finished = 0;
-                    // obj.working = 0;
-                    // obj.faulty = 0;
+                    return res.status(200).json({
+                        errCode: 0,
+                        msg: 'Lấy thống kê sản phẩm bảo hành theo năm thành công!',
+                        data: result
+                    })
                 }
-                return res.status(200).json({
-                    errCode: 0,
-                    msg: 'Lấy thống kê sản phẩm bảo hành theo năm thành công!',
-                    data: result
-                })
+            } else if (req.user.role === 10) {
+                if (type === "month" || type === "quarter") {
+                    let data = await db.Warranty.findAll({
+                        where: {
+                            createdAt: sequelize.where(
+                            sequelize.fn("YEAR", sequelize.col("createAt")),
+                            year)
+                        },
+                        attributes: [
+                            'status',
+                            [sequelize.fn("MONTH", sequelize.col("createAt")), "month"],
+                            [sequelize.fn('COUNT', sequelize.col('warrantyCode')), 'count']
+                        ],
+                        group: ["month", "status"],
+                        raw: true
+                    })
+                    let result = [];
+                    
+                    for (let i = 1; i <= 12; i++) {
+                        let obj = {};
+                        obj.month = i;
+                        obj.finished = 0;
+                        obj.working = 0;
+                        obj.faulty = 0;
+                        for (let j in data) {
+                            if (data[j].month === i) { 
+                                if (data[j].status === finished) {
+                                    obj.finished += parseInt(data[j].count);
+                                } else if (data[j].status === working) {
+                                    obj.working += parseInt(data[j].count);
+                                } else if (data[j].status === faulty) {
+                                    obj.faulty += parseInt(data[j].count)
+                                }
+                            }
+                        }
+                        obj.month = "Tháng " + i;
+                        result.push(obj);
+                        obj = {};
+                        obj.finished = 0;
+                        obj.working = 0;
+                        obj.faulty = 0;
+                    }
+                    if (type === 'quarter') {
+                        let arr = [];
+                        let finished = 0;
+                        let working = 0;
+                        let faulty = 0;
+                        let k = 1;
+                        for (let i = 0; i < 12; i++) {
+                            finished += parseInt(result[i].finished);
+                            working += parseInt(result[i].working);
+                            faulty += parseInt(result[i].faulty);
+                            if (i === 2 || i === 5 || i === 8 || i === 11) {
+                                let obj = {};
+                                obj.finished = finished;
+                                obj.working = working;
+                                obj.faulty = faulty;
+                                obj.quarter = "Quý " + k;
+                                k++;
+                                finished = 0;
+                                working = 0;
+                                faulty = 0;
+                                arr.push(obj);
+                            }
+                        }
+                        return res.status(200).json({
+                            errCode: 0,
+                            msg: 'Lấy thống kê sản phẩm bảo hành theo tháng thành công!',
+                            data: arr
+                        })
+                    }
+                    return res.status(200).json({
+                        errCode: 0,
+                        msg: 'Lấy thống kê sản phẩm bảo hành theo tháng thành công!',
+                        data: result
+                    })
+                }
+                else if (type === 'year') {
+                    let data = await db.Warranty.findAll({
+                        attributes: [
+                            'status',
+                            [sequelize.fn("YEAR", sequelize.col("createAt")), "year"],
+                            [sequelize.fn('COUNT', sequelize.col('warrantyCode')), 'count']
+                        ],
+                        group: ["year", "status"],
+                        raw: true
+                    })
+                    let result = [];
+                    for (let i = year - 3; i <= year; i++) {
+                        let obj = {};
+                        obj.year = i;
+                        obj.finished = 0;
+                        obj.working = 0;
+                        obj.faulty = 0;
+                        for (let j in data) {
+                            if (data[j].year === i) { 
+                                if (data[j].status === finished) {
+                                    obj.finished += parseInt(data[j].count);
+                                } else if (data[j].status === working) {
+                                    obj.working += parseInt(data[j].count);
+                                } else if (data[j].status === faulty) {
+                                    obj.faulty += parseInt(data[j].count)
+                                }
+                            }
+                        }
+                        obj.year = "Năm " + i;
+                        result.push(obj);
+                        
+                    }
+                    return res.status(200).json({
+                        errCode: 0,
+                        msg: 'Lấy thống kê sản phẩm bảo hành theo năm thành công!',
+                        data: result
+                    })
+                }
             }
             
         }catch(err){

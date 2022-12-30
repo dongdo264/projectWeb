@@ -4,7 +4,7 @@ let factoryController = require("../controllers/factoryController");
 const validate = require('../middleware/validate')
 
 //Nhà máy sản xuất sản phẩm
-router.post("/production", validate.checkProduction, factoryController.production)
+router.post("/production", factoryController.production)
 //Lấy ra các hoạt động của nhà máy
 router.get("/actions", factoryController.getAllActions);
 //Nhà máy lấy đơn hàng

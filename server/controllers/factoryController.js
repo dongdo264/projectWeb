@@ -166,99 +166,193 @@ class FactoryController {
             const type = req.query.type;
             const d = new Date();
             const year = d.getFullYear();
-            if (type === "month" || type === "quarter") {
-                let data = await db.Production.findAll({
-                    where: {
-                        createdAt: sequelize.where(
-                          sequelize.fn("YEAR", sequelize.col("MFG")),
-                          year),
-                        factoryCode
-                      },
-                      attributes: [
-                        [sequelize.fn("MONTH", sequelize.col("MFG")), "month"],
-                        [sequelize.fn('SUM', sequelize.col('quantityProduced')), 'sum']
-                      ],
-                      group: ["month"],
-                      raw: true
-                })
-                let result = [];
-                for (let i = 1; i <= 12; i++) {
-                    let check = true;
-                    for (let j in data) {
-                        if (data[j].month === i) { 
-                            data[j].month = "Tháng " + i;
-                            result.push(data[j]);
-                            check = false;
-                            break;
+            if (req.user.role === 1) {
+                if (type === "month" || type === "quarter") {
+                    let data = await db.Production.findAll({
+                        where: {
+                            createdAt: sequelize.where(
+                            sequelize.fn("YEAR", sequelize.col("MFG")),
+                            year),
+                            factoryCode
+                        },
+                        attributes: [
+                            [sequelize.fn("MONTH", sequelize.col("MFG")), "month"],
+                            [sequelize.fn('SUM', sequelize.col('quantityProduced')), 'sum']
+                        ],
+                        group: ["month"],
+                        raw: true
+                    })
+                    let result = [];
+                    for (let i = 1; i <= 12; i++) {
+                        let check = true;
+                        for (let j in data) {
+                            if (data[j].month === i) { 
+                                data[j].month = "Tháng " + i;
+                                result.push(data[j]);
+                                check = false;
+                                break;
+                            }
+                        }
+                        if (check) {
+                            let obj= {};
+                            obj.month = "Tháng " + i;
+                            obj.sum = 0;
+                            result.push(obj);
                         }
                     }
-                    if (check) {
-                        let obj= {};
-                        obj.month = "Tháng " + i;
-                        obj.sum = 0;
-                        result.push(obj);
+                    if (type === 'quarter') {
+                        let arr = [];
+                        let sum = 0;
+                        let k = 1;
+                        for (let i = 0;i < 12; i++) {
+                            sum += parseInt(result[i].sum);
+                            if (i === 2 || i === 5 || i === 8 || i === 11) {
+                                let obj = {};
+                                obj.sum = sum;
+                                obj.quarter = "Quý " + k;
+                                k++;
+                                sum = 0;
+                                arr.push(obj);
+                            }
+                        }
+                        return res.status(200).json({
+                            errCode: 0,
+                            msg: 'Lấy thống kê sản phẩm sản xuất theo tháng thành công!',
+                            data: arr
+                        })
                     }
-                }
-                if (type === 'quarter') {
+                    return res.status(200).json({
+                        errCode: 0,
+                        msg: 'Lấy thống kê sản phẩm sản xuất theo tháng thành công!',
+                        data: result
+                    })
+                } else if (type === 'year') {
+                    let data = await db.Production.findAll({
+                        where: { 
+                            factoryCode
+                        },
+                        attributes: [
+                            [sequelize.fn("YEAR", sequelize.col("MFG")), "year"],
+                            [sequelize.fn('SUM', sequelize.col('quantityProduced')), 'sum']
+                        ],
+                        group: ["year"],
+                        raw: true
+                    })
                     let arr = [];
-                    let sum = 0;
-                    let k = 1;
-                    for (let i = 0;i < 12; i++) {
-                        sum += parseInt(result[i].sum);
-                        if (i === 2 || i === 5 || i === 8 || i === 11) {
+                    for (let i = year - 3; i <= year; i++) {
+                        let check = true
+                        for (let j in data) {
+                            if (data[j].year === i) {
+                                data[j].year = "Năm " + i;
+                                arr.push(data[j]);
+                                check = false;
+                                break;
+                            }
+                        }
+                        if (check) {
                             let obj = {};
-                            obj.sum = sum;
-                            obj.quarter = "Quý " + k;
-                            k++;
-                            sum = 0;
+                            obj.year = "Năm " + i;
+                            obj.sum = "0";
                             arr.push(obj);
                         }
                     }
                     return res.status(200).json({
                         errCode: 0,
-                        msg: 'Lấy thống kê sản phẩm sản xuất theo tháng thành công!',
                         data: arr
                     })
                 }
-                return res.status(200).json({
-                    errCode: 0,
-                    msg: 'Lấy thống kê sản phẩm sản xuất theo tháng thành công!',
-                    data: result
-                })
-            } else if (type === 'year') {
-                let data = await db.Production.findAll({
-                    where: { 
-                        factoryCode
-                      },
-                      attributes: [
-                        [sequelize.fn("YEAR", sequelize.col("MFG")), "year"],
-                        [sequelize.fn('SUM', sequelize.col('quantityProduced')), 'sum']
-                      ],
-                      group: ["year"],
-                      raw: true
-                })
-                let arr = [];
-                for (let i = year - 3; i <= year; i++) {
-                    let check = true
-                    for (let j in data) {
-                        if (data[j].year === i) {
-                            data[j].year = "Năm " + i;
-                            arr.push(data[j]);
-                            check = false;
-                            break;
+            } else if (req.user.role === 10) {
+                if (type === "month" || type === "quarter") {
+                    let data = await db.Production.findAll({
+                        where: {
+                            createdAt: sequelize.where(
+                            sequelize.fn("YEAR", sequelize.col("MFG")),
+                            year),
+                        },
+                        attributes: [
+                            [sequelize.fn("MONTH", sequelize.col("MFG")), "month"],
+                            [sequelize.fn('SUM', sequelize.col('quantityProduced')), 'sum']
+                        ],
+                        group: ["month"],
+                        raw: true
+                    })
+                    let result = [];
+                    for (let i = 1; i <= 12; i++) {
+                        let check = true;
+                        for (let j in data) {
+                            if (data[j].month === i) { 
+                                data[j].month = "Tháng " + i;
+                                result.push(data[j]);
+                                check = false;
+                                break;
+                            }
+                        }
+                        if (check) {
+                            let obj= {};
+                            obj.month = "Tháng " + i;
+                            obj.sum = 0;
+                            result.push(obj);
                         }
                     }
-                    if (check) {
-                        let obj = {};
-                        obj.year = "Năm " + i;
-                        obj.sum = "0";
-                        arr.push(obj);
+                    if (type === 'quarter') {
+                        let arr = [];
+                        let sum = 0;
+                        let k = 1;
+                        for (let i = 0;i < 12; i++) {
+                            sum += parseInt(result[i].sum);
+                            if (i === 2 || i === 5 || i === 8 || i === 11) {
+                                let obj = {};
+                                obj.sum = sum;
+                                obj.quarter = "Quý " + k;
+                                k++;
+                                sum = 0;
+                                arr.push(obj);
+                            }
+                        }
+                        return res.status(200).json({
+                            errCode: 0,
+                            msg: 'Lấy thống kê sản phẩm sản xuất theo tháng thành công!',
+                            data: arr
+                        })
                     }
+                    return res.status(200).json({
+                        errCode: 0,
+                        msg: 'Lấy thống kê sản phẩm sản xuất theo tháng thành công!',
+                        data: result
+                    })
+                } else if (type === 'year') {
+                    let data = await db.Production.findAll({
+                        
+                        attributes: [
+                            [sequelize.fn("YEAR", sequelize.col("MFG")), "year"],
+                            [sequelize.fn('SUM', sequelize.col('quantityProduced')), 'sum']
+                        ],
+                        group: ["year"],
+                        raw: true
+                    })
+                    let arr = [];
+                    for (let i = year - 3; i <= year; i++) {
+                        let check = true
+                        for (let j in data) {
+                            if (data[j].year === i) {
+                                data[j].year = "Năm " + i;
+                                arr.push(data[j]);
+                                check = false;
+                                break;
+                            }
+                        }
+                        if (check) {
+                            let obj = {};
+                            obj.year = "Năm " + i;
+                            obj.sum = "0";
+                            arr.push(obj);
+                        }
+                    }
+                    return res.status(200).json({
+                        errCode: 0,
+                        data: arr
+                    })
                 }
-                return res.status(200).json({
-                    errCode: 0,
-                    data: arr
-                })
             }
             
         }catch(err){

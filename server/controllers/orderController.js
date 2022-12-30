@@ -57,7 +57,6 @@ class orderController {
                     model: db.OrderDetail
                 }]
             })
-            console.log(data);
             if (!data) {
                 return res.status(400).json("Không tìm thấy đơn hàng!")
             }
