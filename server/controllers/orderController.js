@@ -8,7 +8,15 @@ class orderController {
             const agentCode = req.user.id;
             const data = req.body.data;
             const factoryCode = req.body.factoryCode;
-            const orderNumber = Date.now() % 100000000;
+            const orderNumber = Math.floor(Math.random() * 10000000000);
+            let check = await db.Order.findOne({
+                where: {
+                    orderNumber
+                }
+            })
+            if (check) {
+                orderNumber = Math.floor(Math.random() * 100000000000);
+            }
             await db.Order.sequelize.query("SET FOREIGN_KEY_CHECKS = 0", null);
             await db.Order.create({
                 orderNumber,
@@ -149,6 +157,59 @@ class orderController {
                 msg: 'Chuyển sản phẩm thành công!'
             })
         } catch(err) {
+            console.log(err);
+            return res.status(500).json("Lỗi server!");
+        }
+    }
+
+    //Đại lý lấy các đơn hàng
+    async getAllOrders(req, res) {
+        try {
+            const agentCode = req.user.id;
+            let data = await db.Order.findAll({
+                where: {
+                    agentCode
+                },
+                include: [
+                    {
+                        model: db.OrderDetail
+                    }
+                ],
+                order: [
+                    ['orderDate', 'DESC'],   
+                ],
+            })
+            return res.status(200).json({
+                errCode: 0,
+                msg: "lấy đơn hàng thành công!",
+                data
+            })
+        }catch(err) {
+            console.log(err);
+            return res.status(500).json("Lỗi server!");
+        }
+    }
+
+    //Đại lý lấy các đơn hàng
+    async updateOrder(req, res) {
+    try {
+        const orderNumber = req.params.orderNumber;
+        const status = req.body.status;
+        if (!status) {
+            return res.status(400).json("Mising params!");
+        }
+        await db.Order.update({
+            status
+        }, {
+            where: {
+                orderNumber
+            }
+        })
+        return res.status(200).json({
+            errCode: 0,
+            msg: "Cập nhật đơn hàng thành công!"
+        })
+        }catch(err) {
             console.log(err);
             return res.status(500).json("Lỗi server!");
         }

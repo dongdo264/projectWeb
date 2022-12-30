@@ -8,7 +8,7 @@ class agentController {
             const agentCode = req.user.id;
             const data = req.body.data;
             const factoryCode = req.body.factoryCode;
-            const orderNumber = Date.now() % 100000000;
+            const orderNumber = Math.floor(Math.random() * 1000000000);
             await db.Order.sequelize.query("SET FOREIGN_KEY_CHECKS = 0", null);
             await db.Order.create({
                 orderNumber,
@@ -35,6 +35,29 @@ class agentController {
                 errCode: 1,
                 msg: "Lỗi server"
             })
+        }
+    }
+
+    //Lấy các sản phẩm nhập về
+    async getAllProductImport(req, res) {
+        try {
+            const agentCode = req.user.id;
+            
+            let result = await db.AgentWarehouse.findAll({
+                where: {
+                    agentCode
+                },
+                order: [
+                    ['createAt', 'DESC'],   
+                ],
+            })
+            return res.status(200).json({
+                errCode: 0,
+                data: result
+            })
+        }catch(err) {
+            console.log(err);
+            return res.status(500).json("Lỗi server!");
         }
     }
 
@@ -84,6 +107,19 @@ class agentController {
             const data = req.body.data;
             const agentCode = req.user.id;
 
+            let check = await db.Customer.findOne({
+                where: {
+                    customerCode
+                }
+            })
+            if (!check) {
+                return res.status(200).json({
+                    errCode: 5,
+                    msg: 'Not found!',
+                    data: "hello"
+                })
+            }
+
             for (let i in data) {
                 let warehouse = await db.AgentWarehouse.findAll({
                     where: {
@@ -100,7 +136,7 @@ class agentController {
                 let instock = warehouse[k].quantityImported - warehouse[k].quantitySold
                 for (let j = 0; j < data[i].quantity; j++) {
                     await db.CustomerProduct.create({
-                        model: Date.now() % 10000000,
+                        model: Math.floor(Math.random() * 10000000),
                         customerCode,
                         agentCode,
                         batchCode: warehouse[k].batchCode
@@ -121,8 +157,9 @@ class agentController {
                         instock = warehouse[k].quantityImported - warehouse[k].quantitySold;
                     }
                 }
+                let sell = warehouse[k].quantityImported - instock;
                 await db.AgentWarehouse.update({
-                    quantitySold: data[i].quantity
+                    quantitySold: sell
                 }, {
                     where: {
                         agentCode,
@@ -160,7 +197,6 @@ class agentController {
                 arr.push(customer[i].customerCode);
             }
             let data = await db.CustomerProduct.findAll({
-                //raw: true,
                 where: {
                     customerCode: {
                         [sequelize.Op.in]: arr
@@ -185,10 +221,27 @@ class agentController {
                     ['dateOfPurchase', 'DESC'],   
                 ],
             })
+            let arr_ = []
+            for (let i in data) {
+                let warranty = await db.Product.findOne({
+                    where: {
+                        productCode: data[i].agentwarehouse.productCode,
+                    },
+                    attributes: [
+                        'warrantyPeriod'
+                    ],
+                    
+                });
+                let obj = {
+                    warrantyPeriod: warranty.warrantyPeriod
+                }
+                arr_.push(obj);
+            }
             return res.status(200).json({
                 errCode: 0,
                 msg: 'Lấy sản phẩm đã bán thành công!',
-                data
+                data,
+                warranty: arr_
             })
         }catch(err) {
             console.log(err);
@@ -204,8 +257,14 @@ class agentController {
         try {
             const agentCode = req.user.id;
             const data = req.body.data;
+            // const id = 
+            // let check = await db.Warranty.findOne({
+            //     where: {
+
+            //     }
+            // })
             let create = await db.Warranty.create({
-                warrantyCode: Date.now() % 10000000000,
+                warrantyCode: Math.floor(Math.random() * 1000000000),
                 agentCode,
                 wcCode: data.wcCode,
                 model: data.model,
@@ -330,6 +389,132 @@ class agentController {
             console.log(err);
             return res.status(500).json("Lỗi server!");
         }
+    }
+
+     //chuyển lại sản phẩm về cơ sở sản xuất
+     async backToFactory(req, res) {
+        try {
+            const dt = req.body.data;
+            
+            await db.AgentWarehouse.update({
+                quantityImported: dt.quantitySold 
+            }, {
+                where: {
+                    batchCode: dt.batchCode,
+                    productCode: dt.productCode,
+                    color: dt.color,
+                    agentCode: req.user.id
+                }
+            })
+            let check = await db.Production.findOne({
+                where: {
+                    batchCode: dt.batchCode
+                },
+                raw: true
+            })
+            let quantityBack = check.quantitySold - (dt.quantityImported - dt.quantitySold);
+            await db.Production.update({
+                quantitySold: quantityBack
+            }, {
+                where: {
+                    batchCode: dt.batchCode
+                }
+            })
+            return res.status(200).json({
+                errCode: 0, 
+                msg: 'Chuyển sản phẩm về nhà máy thành công!'
+               
+            })
+        }catch(err) {
+            console.log(err);
+            return res.status(500).json("Lỗi server!");
+        }
+    }
+
+    //Phân thích sản phẩm bán được
+    async analyzProductSold(req, res) {
+        try {
+            const agentCode = req.user.id;
+            const type = req.query.type;
+            const d = new Date();
+            const year = d.getFullYear();
+            if (type === "month" || type === "quarter") {
+                let data = await db.AgentWarehouse.findAll({
+                    where: {
+                        createdAt: sequelize.where(
+                          sequelize.fn("YEAR", sequelize.col("createAt")),
+                          year),
+                        agentCode
+                      },
+                      attributes: [
+                        [sequelize.fn("MONTH", sequelize.col("createAt")), "month"],
+                        [sequelize.fn('SUM', sequelize.col('quantityImported')), 'sum']
+                      ],
+                      group: ["month"],
+                      raw: true
+                })
+                console.log(data);
+                const customer = await db.Customer.findAll({
+                    attributes: ['customerCode'],
+                    where: {
+                        agentCode
+                    },
+                    raw: true
+                })
+                let arr = [];
+                for (let i in customer) {
+                    arr.push(customer[i].customerCode);
+                }
+                let dataSold = await db.CustomerProduct.findAll({
+                    where: {
+                        customerCode: {
+                            [sequelize.Op.in]: arr
+                        },
+                        dateOfPurchase: sequelize.where(
+                          sequelize.fn("YEAR", sequelize.col("dateOfPurchase")),
+                          year)
+                      },
+                      attributes: [
+                        [sequelize.fn("MONTH", sequelize.col("dateOfPurchase")), "month"],
+                        [sequelize.fn('count', sequelize.col('model')), 'sum']
+                      ],
+                      group: ["month"],
+                      raw: true
+                })
+                console.log(dataSold);
+                let result = [];
+                for (let i = 1; i <= 12; i++) {
+                    
+                    let obj = {};
+                    obj.month = i;
+                    obj.sold = 0;
+                    obj.imported = 0;
+                    for (let j in data) {
+                        if (data[j].month === i) { 
+                            obj.imported += parseInt(data[j].sum);
+                        }
+                    }
+                    for (let j in dataSold) {
+                        if (dataSold[j].month === i) { 
+                            obj.sold += parseInt(dataSold[j].sum);
+                        }
+                    }
+                    
+                    obj.month = "Tháng " + i;
+                    result.push(obj);
+                    }
+                    return res.status(200).json({
+                        errCode: 0,
+                        msg: 'Lấy thống kê sản phẩm sản xuất theo tháng thành công!',
+                        data: result
+                    })
+                }
+                
+        }catch(err) {
+            console.log(err);
+            return res.status(500).json("Lỗi server")
+        
+        } 
     }
    
 }

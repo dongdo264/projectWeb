@@ -14,5 +14,11 @@ router.post("/sendwarrantyclaim", agentController.sendWarrantyClaim);
 router.get("/warrantyclaim", agentController.getAllWarrantyClaim)
 //Cập nhật sản phẩm của khách hàng
 router.put("/customerproduct/:model", agentController.updateCustomerProduct)
+//Lấy sản phẩm đã nhập về
+router.get("/productsimported", agentController.getAllProductImport);
+//Chuyển sản phẩm về nhà máy
+router.put("/agentwarehouse", agentController.backToFactory);
+//Phân tích số lượng bán ra, nhập vào
+router.get("/analyz", agentController.analyzProductSold)
 
 module.exports = router;

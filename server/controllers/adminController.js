@@ -8,12 +8,7 @@ class adminController {
     async deleteUserById(req, res) {
         const id = req.params.id;
         const status = req.body.status;
-        if (!id) {
-            return res.json({
-                errCode: 0,
-                msg: "Missing params!"
-            })
-        }
+        
         try {
             await db.Account.update({
                 status
@@ -141,6 +136,23 @@ class adminController {
                     productLine: productLine
                 }
             })
+            if (data?.status === "Inactive") {
+                await db.Product.update({
+                    status: "Inactive"
+                }, {
+                    where: {
+                        productLine
+                    }
+                })
+            } else if (data?.status === "Active") {
+                await db.Product.update({
+                    status: "Active"
+                }, {
+                    where: {
+                        productLine
+                    }
+                })
+            }
             return res.status(200).json({
                 errCode: 0,
                 msg: "Cập nhật thành công!"
