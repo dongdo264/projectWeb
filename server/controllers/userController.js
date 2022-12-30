@@ -208,7 +208,6 @@ class userController {
                         },
                     }
                     ],
-                   
                     nest: true
                 })
                 return res.status(200).json({

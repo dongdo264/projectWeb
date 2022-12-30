@@ -126,7 +126,6 @@ class adminController {
     async updateProductLine(req, res) {
         try{
             const productLine = req.params.productline;
-            console.log(productLine);
             const data = req.body.data;
             await db.ProductLine.update({
                 textDescription: data.textDescription,
@@ -176,7 +175,21 @@ class adminController {
                     msg: "missing body !"
                 })
             } else {
+                while(true) {
+                    let check = await db.Product.findOne({
+                        where: {
+                            productCode: id
+                        },
+                        raw: true
+                    })
+                    if (check) {
+                        id = Math.floor(Math.random() * 1000000);
+                    } else {
+                        break;
+                    }
+                }
                 await db.ProductLine.sequelize.query("SET FOREIGN_KEY_CHECKS = 0", null);
+                await db.Product.sequelize.query("SET FOREIGN_KEY_CHECKS = 0", null);
                 await db.Product.create({
                     productCode: id,
                     productLine: product.productLine,
@@ -200,6 +213,7 @@ class adminController {
                     weight: productdetail.weight
                 })
                 await db.ProductLine.sequelize.query("SET FOREIGN_KEY_CHECKS = 1", null);
+                await db.Product.sequelize.query("SET FOREIGN_KEY_CHECKS = 1", null);
                 return res.status(200).json({
                     errCode: 0,
                     msg: 'Tạo sản phẩm thành công!'
@@ -272,5 +286,6 @@ class adminController {
             })
         }
     }
+
 }
 module.exports = new adminController;

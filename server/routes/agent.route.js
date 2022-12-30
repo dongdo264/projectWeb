@@ -20,5 +20,7 @@ router.get("/productsimported", agentController.getAllProductImport);
 router.put("/agentwarehouse", agentController.backToFactory);
 //Phân tích số lượng bán ra, nhập vào
 router.get("/analyz", agentController.analyzProductSold)
+//Triệu hồi sản phẩm
+router.put("/product/:id", agentController.updateStatusProduct);
 
 module.exports = router;
