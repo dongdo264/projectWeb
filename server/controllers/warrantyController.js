@@ -60,16 +60,34 @@ class customerController {
     async sendProductToFactory(req, res) {
         try{
             const warrantyCode = req.params.id;
-            const factoryCode = req.body.data.factoryCode;
             const model = req.body.data.model;
             const productCode = req.body.data.productCode;
             const note = req.body.data.note;
             const status = req.body.data.status;
             
+            let tmp = await db.CustomerProduct.findOne({
+                where: {
+                    model,
+
+                },
+                attributes: [
+                    'batchCode'
+                ],
+                raw: true
+            })
+            const factory = await db.Production.findOne({
+                where: {
+                    batchCode: tmp.batchCode
+                },
+                attributes: [
+                    'factoryCode'
+                ],
+                raw: true
+            })
             await db.FaultyProduct.create({
-                errCode: Date.now() % 10000001,
+                errCode: Math.floor(Math.random() * 10000000000),
                 productCode,
-                factoryCode,
+                factoryCode: factory.factoryCode,
                 wcCode: req.user.id,
                 model,
                 status: "Sản phẩm lỗi",
@@ -85,10 +103,10 @@ class customerController {
                 }
             })
             await db.CustomerProduct.update({
-                status: "Sản phẩm lỗi"
+                status: "Sản phẩm lỗi",
             }, {
                 where: {
-                    model
+                    model: model
                 }
             })
             return res.status(200).json({

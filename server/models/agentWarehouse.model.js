@@ -1,5 +1,5 @@
 module.exports = (db) => {
-    const {DataTypes} = require('sequelize');
+    const {DataTypes, NOW} = require('sequelize');
     const AgentWarehouse = db.define('agentwarehouse', {
       // Model attributes are defined here
       
@@ -39,6 +39,11 @@ module.exports = (db) => {
         type: DataTypes.STRING,
         allowNull: false,
         defaultValue: 'Active'
+      },
+      createAt: {
+        type: DataTypes.DATEONLY,
+        allowNull: true,
+        defaultValue: NOW
       }
     }, {
         timestamps: false
